@@ -9,10 +9,10 @@ import reactor.core.publisher.Mono;
 import reactor.util.retry.Retry;
 import tn.portfolio.reactive.common.EmailMessage;
 import tn.portfolio.reactive.common.ReactiveEventListener;
-import tn.portfolio.reactive.common.service.DummyEmailClientService;
 import tn.portfolio.reactive.common.service.EmailClientService;
 import tn.portfolio.reactive.project.domain.Project;
 import tn.portfolio.reactive.project.domain.ProjectTaskId;
+import tn.portfolio.reactive.project.domain.UnknownProjectTaskIdException;
 import tn.portfolio.reactive.project.events.TaskAddedToProjectEvent;
 import tn.portfolio.reactive.project.repository.ProjectRepository;
 import tn.portfolio.reactive.team.events.TeamTaskCompletedEvent;
@@ -48,6 +48,7 @@ public class DomainEventListeners {
     @ReactiveEventListener(TeamTaskCompletedEvent.class)
     public Mono<Void> onTeamTaskCompletedEvent(TeamTaskCompletedEvent event) {
         return Mono.defer(() -> projects.findByTaskId(event.projectTaskId())
+                        .switchIfEmpty(Mono.error(new UnknownProjectTaskIdException(event.projectTaskId())))
                         .map(project -> project.completeTask(event.projectTaskId(), event.actualSpentTime()))
                         .flatMap(projects::save)
                 )

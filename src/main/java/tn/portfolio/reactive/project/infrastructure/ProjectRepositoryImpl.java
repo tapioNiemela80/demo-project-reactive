@@ -1,11 +1,10 @@
 package tn.portfolio.reactive.project.infrastructure;
 
-// ProjectRepositoryCustomImpl.java
-
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.util.function.Tuple2;
 import tn.portfolio.reactive.project.domain.Project;
 import tn.portfolio.reactive.project.domain.ProjectDomainMapper;
 import tn.portfolio.reactive.project.domain.ProjectId;
@@ -34,13 +33,15 @@ class ProjectRepositoryImpl implements ProjectRepository {
         Flux<ProjectTaskEntity> taskFlux = taskEntityRepository.findByProjectId(id);
 
         return Mono.zip(projectMono, taskFlux.collectList())
-                .map(tuple -> {
-                    ProjectEntity entity = tuple.getT1();
-                    List<ProjectTaskEntity> taskEntities = tuple.getT2();
+                .map(this::toProject);
+    }
 
-                    ProjectDto dto = ProjectPersistenceMapper.fromEntity(entity, taskEntities);
-                    return ProjectDomainMapper.fromDto(dto);
-                });
+    private Project toProject(Tuple2<ProjectEntity, List<ProjectTaskEntity>> tuple) {
+        ProjectEntity entity = tuple.getT1();
+        List<ProjectTaskEntity> taskEntities = tuple.getT2();
+
+        ProjectDto dto = ProjectPersistenceMapper.fromEntity(entity, taskEntities);
+        return ProjectDomainMapper.fromDto(dto);
     }
 
     @Override
@@ -48,8 +49,7 @@ class ProjectRepositoryImpl implements ProjectRepository {
     public Mono<Project> save(Project project) {
         boolean isNew = project.isNew();
 
-        // Domain → DTO
-        ProjectDto dto = ProjectDomainMapper.toDto(project); // uusi mapperi
+        ProjectDto dto = ProjectDomainMapper.toDto(project);
         ProjectEntity entity = ProjectPersistenceMapper.toEntity(dto, isNew);
         List<ProjectTaskEntity> taskEntities = dto.tasks().stream()
                 .map(ProjectPersistenceMapper::toEntity)
@@ -59,36 +59,38 @@ class ProjectRepositoryImpl implements ProjectRepository {
 
         return taskEntityRepository.deleteByProjectId(projectId)
                 .then(projectEntityRepository.save(entity))
-                .flatMap(savedEntity ->
-                        taskEntityRepository.saveAll(taskEntities)
-                                .collectList()
-                                .map(savedTasks -> {
-                                    ProjectDto savedDto = ProjectPersistenceMapper.fromEntity(savedEntity, savedTasks);
-                                    return ProjectDomainMapper.fromDto(savedDto);
-                                })
-                )
-                .doOnError(e -> System.out.println("Saving project failed " + e));
+                .flatMap(savedEntity -> toProject(taskEntities, savedEntity));
+    }
+
+    private Mono<Project> toProject(List<ProjectTaskEntity> taskEntities, ProjectEntity savedEntity) {
+        return taskEntityRepository.saveAll(taskEntities)
+                .collectList()
+                .map(savedTasks -> {
+                    ProjectDto savedDto = ProjectPersistenceMapper.fromEntity(savedEntity, savedTasks);
+                    return ProjectDomainMapper.fromDto(savedDto);
+                });
     }
 
     @Override
     public Mono<Project> findByTaskId(ProjectTaskId taskId) {
         UUID id = taskId.value();
         return taskEntityRepository.findById(id)
-                .switchIfEmpty(Mono.error(new IllegalArgumentException("Task not found with id: " + taskId)))
-                .flatMap(taskEntity -> {
-                    UUID projectId = taskEntity.getProjectId();
+                .flatMap(taskEntity -> toProject(taskEntity));
+    }
 
-                    Mono<ProjectEntity> projectMono = projectEntityRepository.findById(projectId);
-                    Mono<List<ProjectTaskEntity>> tasksMono = taskEntityRepository.findByProjectId(projectId).collectList();
+    private Mono<Project> toProject(ProjectTaskEntity taskEntity) {
+        UUID projectId = taskEntity.getProjectId();
 
-                    return Mono.zip(projectMono, tasksMono)
-                            .map(tuple -> {
-                                ProjectDto dto = ProjectPersistenceMapper.fromEntity(
-                                        tuple.getT1(),
-                                        tuple.getT2()
-                                );
-                                return ProjectDomainMapper.fromDto(dto);
-                            });
+        Mono<ProjectEntity> projectMono = projectEntityRepository.findById(projectId);
+        Mono<List<ProjectTaskEntity>> tasksMono = taskEntityRepository.findByProjectId(projectId).collectList();
+
+        return Mono.zip(projectMono, tasksMono)
+                .map(tuple -> {
+                    ProjectDto dto = ProjectPersistenceMapper.fromEntity(
+                            tuple.getT1(),
+                            tuple.getT2()
+                    );
+                    return ProjectDomainMapper.fromDto(dto);
                 });
     }
 }
