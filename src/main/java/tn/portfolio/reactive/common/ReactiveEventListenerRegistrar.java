@@ -1,8 +1,6 @@
 package tn.portfolio.reactive.common;
 
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 
@@ -17,7 +15,7 @@ public class ReactiveEventListenerRegistrar implements InitializingBean {
 
     public ReactiveEventListenerRegistrar(
             ReactiveDomainEventPublisher publisher,
-            List<Object> allBeans // Spring antaa kaikki beanit
+            List<Object> allBeans // Spring passes all beans here!
     ) {
         this.publisher = publisher;
         this.allBeans = allBeans;
