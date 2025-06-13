@@ -44,6 +44,7 @@ public class Team {
     }
 
     public Team removeMember(TeamMemberId memberId){
+        Objects.requireNonNull(memberId);
         verifyContainsMember(memberId);
         verifyMemberCanBeRemoved(memberId);
         var remainingMembers = members.stream()
