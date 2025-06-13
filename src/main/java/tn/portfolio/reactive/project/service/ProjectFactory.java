@@ -21,7 +21,6 @@ class ProjectFactory {
                       LocalDate plannedEndDate,
                       tn.portfolio.reactive.project.controller.TimeEstimation timeEstimation,
                       ContactPersonInput contactPersonInput){
-        System.out.println(id+" "+name+" "+description);
         return Project.create(id, name, description, dateService.now(), plannedEndDate, toDomain(timeEstimation), contactPersonInput.name(), contactPersonInput.email());
     }
 
