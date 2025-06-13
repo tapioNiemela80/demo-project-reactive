@@ -1,0 +1,35 @@
+spring:
+  r2dbc:
+    url: r2dbc:postgresql://localhost:5432/mydb?currentSchema=project_demo_reactive
+    username: user
+    password: ${POSTGRES_PASSWORD}
+
+  # Flyway käyttää JDBC:tä (ei reaktiivinen, mutta toimii hyvin migraatioihin)
+  flyway:
+    enabled: true
+    url: jdbc:postgresql://localhost:5432/mydb?currentSchema=project_demo_reactive
+    user: user
+    password: ${POSTGRES_PASSWORD}
+    locations: classpath:db/migration
+    schemas: project_demo_reactive
+
+  datasource:
+    # Tarvitaan vain Flywaylle
+    driver-class-name: org.postgresql.Driver
+
+  main:
+    web-application-type: reactive
+
+server:
+  port: 8080
+
+logging:
+  level:
+    root: INFO
+    org.springframework.r2dbc.core: DEBUG
+    org.springframework.data.r2dbc.core: DEBUG
+    io.r2dbc.postgresql.QUERY: DEBUG
+    io.r2dbc.postgresql.PARAM: DEBUG
+
+email:
+  sender: demo.project@example.com
