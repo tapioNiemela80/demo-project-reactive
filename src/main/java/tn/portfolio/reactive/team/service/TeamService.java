@@ -1,5 +1,7 @@
 package tn.portfolio.reactive.team.service;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 import tn.portfolio.reactive.common.ReactiveDomainEventPublisher;
@@ -20,6 +22,7 @@ public class TeamService {
     private final ProjectRepository projects;
     private final ReactiveDomainEventPublisher eventPublisher;
     private final TeamFactory teamFactory;
+    private static final Logger log = LoggerFactory.getLogger(TeamService.class);
 
     public TeamService(TeamRepository teams, IDService idService, ProjectRepository projects, ReactiveDomainEventPublisher eventPublisher, TeamFactory teamFactory) {
         this.teams = teams;
@@ -67,8 +70,14 @@ public class TeamService {
         return findTeam(teamId)
                 .map(team -> team.markTaskCompleted(taskID, toDomain(actualSpentTime)))
                 .flatMap(teams::save)
-                .doOnSuccess(team -> eventPublisher.publish(new TeamTaskCompletedEvent(taskID, team.getOriginalTaskId(taskID).get(), toDomain(actualSpentTime))))
+                .doOnSuccess(team -> publishTeamTaskCompletedEvent(taskID, actualSpentTime, team))
                 .then();
+    }
+
+    private void publishTeamTaskCompletedEvent(TeamTaskId taskID, ActualSpentTime actualSpentTime, Team team) {
+        team.getOriginalTaskId(taskID)
+                .ifPresentOrElse(projectTaskId -> eventPublisher.publish(new TeamTaskCompletedEvent(taskID, projectTaskId, toDomain(actualSpentTime))),
+                        () -> log.warn("No corresponding project taskId for team %s and task %s".formatted(team.getId(), taskID)));
     }
 
     private tn.portfolio.reactive.common.domain.ActualSpentTime toDomain(ActualSpentTime actualSpentTime) {
@@ -78,11 +87,11 @@ public class TeamService {
     public Mono<TeamMemberId> addMember(TeamId teamId, String name, String profession) {
         return Mono.zip(idService.newTeamMemberId(), findTeam(teamId))
                 .map(tuple -> new MemberCreationContext(tuple.getT1(), tuple.getT2()))
-                .flatMap(context -> context.addMember(name ,profession, teams));
+                .flatMap(context -> context.addMember(name, profession, teams));
     }
 
-    private record MemberCreationContext(TeamMemberId memberId, Team team){
-        Mono<TeamMemberId> addMember(String name, String profession, TeamRepository teamRepository){
+    private record MemberCreationContext(TeamMemberId memberId, Team team) {
+        Mono<TeamMemberId> addMember(String name, String profession, TeamRepository teamRepository) {
             return teamRepository.save(team.addMember(memberId, name, profession))
                     .thenReturn(memberId);
         }
@@ -96,27 +105,36 @@ public class TeamService {
     }
 
     public Mono<TeamTaskId> addTask(TeamId teamId, ProjectTaskId projectTaskId) {
-        return find(teamId, projectTaskId)
-                .map(guard -> guard.validateTaskIsFree())
-                .flatMap(team -> idService.newTeamTaskId())
-                .flatMap(taskId -> findData(teamId, projectTaskId, taskId)
-                        .map(data -> data.addTask(projectTaskId))
-                        .flatMap(teamWithTaskId -> teams.save(teamWithTaskId.team()).thenReturn(teamWithTaskId.taskId())));
+        return findIfTaskIsAlreadyAssigned(projectTaskId)
+                .map(TaskAssignmentGuard::validateTaskIsFreeToAssign)
+                .flatMap(passedGuard -> generateTaskIdAndAddToTeam(teamId, projectTaskId));
     }
 
-    private Mono<TaskAssignmentGuard> find(TeamId teamId, ProjectTaskId taskID) {
-        return Mono.zip(findTeam(teamId), isAlreadyAssigned(taskID), idService.newTeamTaskId())
-                .map(tuple -> new TaskAssignmentGuard(tuple.getT1(), tuple.getT2(), tuple.getT3()));
+    private Mono<TeamTaskId> generateTaskIdAndAddToTeam(TeamId teamId, ProjectTaskId projectTaskId) {
+        return Mono.zip(idService.newTeamTaskId(), findTeam(teamId), findProject(projectTaskId))
+                .map(tuple -> new TaskCreationContext(tuple.getT3(), tuple.getT2(), tuple.getT1()))
+                .flatMap(context -> teams.save(context.withTask(projectTaskId))
+                        .thenReturn(context.taskId()));
     }
 
-    private Mono<Boolean> isAlreadyAssigned(ProjectTaskId taskId) {
-        return teams.findByProjectTaskId(taskId)
-                .map(ignored -> true)
-                .defaultIfEmpty(false);
+    private Mono<Team> findTeam(TeamId teamId) {
+        return teams.findById(teamId)
+                .switchIfEmpty(Mono.error(new UnknownTeamIdException(teamId)));
     }
 
-    private record TaskAssignmentGuard(Team team, boolean alreadyAssigned, TeamTaskId teamTaskId) {
-        TaskAssignmentGuard validateTaskIsFree() {
+    private Mono<Project> findProject(ProjectTaskId projectTaskId) {
+        return projects.findByTaskId(projectTaskId)
+                .switchIfEmpty(Mono.error(new UnknownProjectTaskIdException(projectTaskId)));
+    }
+
+    private Mono<TaskAssignmentGuard> findIfTaskIsAlreadyAssigned(ProjectTaskId projectTaskId) {
+        return teams.findByProjectTaskId(projectTaskId)
+                .map(team -> new TaskAssignmentGuard(projectTaskId, true))
+                .defaultIfEmpty(new TaskAssignmentGuard(projectTaskId, false));
+    }
+
+    private record TaskAssignmentGuard(ProjectTaskId projectTaskId, boolean alreadyAssigned) {
+        TaskAssignmentGuard validateTaskIsFreeToAssign() {
             if (alreadyAssigned) {
                 throw new TaskAlreadyAssignedException("Task is already assigned to some team");
             }
@@ -124,29 +142,12 @@ public class TeamService {
         }
     }
 
-    private record ProjectAndTeamAndTeamTaskId(Project project, Team team, TeamTaskId taskId) {
-        TeamWithTaskId addTask(ProjectTaskId projectTaskId) {
-            var projectTaskSnapshot = project.getTask(projectTaskId).orElseThrow(() -> new UnknownProjectTaskIdException(projectTaskId));
-            return new TeamWithTaskId(team.addTask(taskId, projectTaskSnapshot.projectTaskId(), projectTaskSnapshot.title(), projectTaskSnapshot.description()), taskId);
+    private record TaskCreationContext(Project project, Team team, TeamTaskId taskId) {
+        Team withTask(ProjectTaskId projectTaskId) {
+            var projectTaskSnapshot = project.getTask(projectTaskId)
+                    .orElseThrow(() -> new UnknownProjectTaskIdException(projectTaskId));
+            return team.addTask(taskId, projectTaskId, projectTaskSnapshot.title(), projectTaskSnapshot.description());
         }
-    }
-
-    private record TeamWithTaskId(Team team, TeamTaskId taskId) {
-    }
-
-    private Mono<ProjectAndTeamAndTeamTaskId> findData(TeamId teamId, ProjectTaskId projectTaskId, TeamTaskId taskId) {
-        return Mono.zip(findProject(projectTaskId), findTeam(teamId))
-                .map(tuple -> new ProjectAndTeamAndTeamTaskId(tuple.getT1(), tuple.getT2(), taskId));
-    }
-
-    private Mono<Team> findTeam(TeamId teamId) {
-        return teams.findById(teamId)
-                .switchIfEmpty(Mono.error(new IllegalArgumentException("Team not found " + teamId)));
-    }
-
-    private Mono<Project> findProject(ProjectTaskId projectTaskId) {
-        return projects.findByTaskId(projectTaskId)
-                .switchIfEmpty(Mono.error(new IllegalArgumentException("Project not found by task id" + projectTaskId)));
     }
 
 }

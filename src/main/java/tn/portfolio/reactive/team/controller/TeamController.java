@@ -39,11 +39,10 @@ public class TeamController {
     }
 
     @PostMapping("/{teamId}/tasks/by-project-id/{projectTaskId}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public Mono<Void> addTask(@PathVariable UUID teamId, @PathVariable UUID projectTaskId){
+    @ResponseStatus(HttpStatus.CREATED)
+    public Mono<UUID> addTask(@PathVariable UUID teamId, @PathVariable UUID projectTaskId){
         return teamService.addTask(new TeamId(teamId), new ProjectTaskId(projectTaskId))
-                .doOnSuccess(teamTaskId -> System.out.println("CREATE "+teamTaskId))
-                .then();
+                .map(TeamTaskId::value);
     }
 
     @PatchMapping("/{teamId}/tasks/{taskId}/assignee")

@@ -48,7 +48,7 @@ class TeamTask {
         if (this.status != TeamTaskStatus.IN_PROGRESS) {
             throw new IllegalArgumentException("task not in progress");
         }
-        return new TeamTask(id, projectTaskId, name, description, TeamTaskStatus.COMPLETED, assigneeId, actualTimeWasSpent);
+        return new TeamTask(id, projectTaskId, name, description, TeamTaskStatus.COMPLETED, null, actualTimeWasSpent);
     }
     TeamTask unassign() {
         if(this.status != TeamTaskStatus.ASSIGNED){
@@ -61,7 +61,11 @@ class TeamTask {
     }
 
     boolean isAssignedTo(TeamMemberId memberId) {
-        return assigneeId.equals(memberId.value());
+        Objects.requireNonNull(memberId);
+        if(assigneeId == null){
+            return false;
+        }
+        return assigneeId.equals(memberId);
     }
     ProjectTaskId getOriginalTaskId() {
         return projectTaskId;

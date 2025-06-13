@@ -90,4 +90,11 @@ public class ControllerExceptionHandler {
                 .status(HttpStatus.CONFLICT)
                 .body(ex.getMessage()));
     }
+
+    @ExceptionHandler(TeamMemberHasAssignedTasksException.class)
+    public Mono<ResponseEntity<String>> handleTeamMemberHasAssignedTasksException(TeamMemberHasAssignedTasksException ex) {
+        return Mono.just(ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(ex.getMessage()));
+    }
 }
