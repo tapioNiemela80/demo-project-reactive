@@ -1,18 +1,16 @@
 package tn.portfolio.reactive.team.domain;
 
-import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.PersistenceCreator;
-import org.springframework.data.annotation.Transient;
-import org.springframework.data.annotation.Version;
-import org.springframework.data.domain.Persistable;
-import org.springframework.data.relational.core.mapping.MappedCollection;
 import tn.portfolio.reactive.common.domain.ActualSpentTime;
+import tn.portfolio.reactive.common.domain.AggregateRoot;
 import tn.portfolio.reactive.project.domain.ProjectTaskId;
 import tn.portfolio.reactive.team.infrastructure.TeamDto;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Function;
-import java.util.stream.Collectors;
+@AggregateRoot
 public class Team {
     private final TeamId id;
     private final String name;

@@ -1,7 +1,10 @@
 package tn.portfolio.reactive.project.domain;
 
+import tn.portfolio.reactive.common.domain.ValueObject;
+
 import java.util.Objects;
 
+@ValueObject
 public final class TimeEstimation {
 
     private final int hours;

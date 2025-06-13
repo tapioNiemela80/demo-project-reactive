@@ -1,8 +1,7 @@
 package tn.portfolio.reactive.project.domain;
 
-// Project.java
-
 import tn.portfolio.reactive.common.domain.ActualSpentTime;
+import tn.portfolio.reactive.common.domain.AggregateRoot;
 import tn.portfolio.reactive.project.infrastructure.ProjectDto;
 
 import java.time.LocalDate;
@@ -10,6 +9,7 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.function.Function;
 
+@AggregateRoot
 public final class Project {
     private final ProjectId id;
     private final String name;

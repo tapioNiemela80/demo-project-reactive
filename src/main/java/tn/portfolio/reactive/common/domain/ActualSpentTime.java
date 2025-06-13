@@ -2,6 +2,7 @@ package tn.portfolio.reactive.common.domain;
 
 import java.util.Objects;
 
+@ValueObject
 public final class ActualSpentTime {
 
     private final int hours;
