@@ -1,4 +1,4 @@
-package tn.portfolio.reactive.team.controller;
+package tn.portfolio.reactive.team.view;
 
 import java.util.List;
 import java.util.UUID;
@@ -10,11 +10,11 @@ public record TeamView(
         List<TaskView> tasks
 ) {
 
-    public ActualSpentTime getActualWorkDone(){
+    public ActualTimeSpent getActualWorkDone(){
         return tasks.stream()
                 .filter(TaskView::isCompleted)
                 .map(TaskView::actualSpentTime)
-                .reduce(ActualSpentTime.zero(), ActualSpentTime::add);
+                .reduce(ActualTimeSpent.zero(), ActualTimeSpent::add);
     }
 
 }

@@ -1,11 +1,9 @@
 package tn.portfolio.reactive.team.infrastructure;
 
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import tn.portfolio.reactive.team.controller.ActualSpentTime;
-import tn.portfolio.reactive.team.controller.MemberView;
-import tn.portfolio.reactive.team.controller.TaskView;
-import tn.portfolio.reactive.team.controller.TeamView;
+import tn.portfolio.reactive.team.view.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,23 +19,32 @@ public class TeamViewService {
         this.repository = repository;
     }
 
+    public Flux<TeamsView> findAll(){
+        return repository.findAllTeamsViewRows()
+                .map(data -> new TeamsView(data.teamId(), data.teamName()));
+    }
+
     public Mono<TeamView> findOne(UUID teamId) {
         return repository.findTeamViewByTeamId(teamId)
                 .collectList()
-                .flatMap(rows -> {
-                    if (rows.isEmpty()) return Mono.empty();
+                .flatMap(rows -> toTeamView(rows));
+    }
 
-                    TeamViewRow first = rows.get(0);
-                    List<MemberView> members = getMembers(rows);
-                    List<TaskView> tasks = getTasks(rows);
+    private Mono<TeamView> toTeamView(List<TeamViewRow> rows) {
+        if (rows.isEmpty()) {
+            return Mono.empty();
+        }
 
-                    return Mono.just(new TeamView(
-                            first.teamId(),
-                            first.teamName(),
-                            members,
-                            tasks
-                    ));
-                });
+        TeamViewRow first = rows.get(0);
+        List<MemberView> members = getMembers(rows);
+        List<TaskView> tasks = getTasks(rows);
+
+        return Mono.just(new TeamView(
+                first.teamId(),
+                first.teamName(),
+                members,
+                tasks
+        ));
     }
 
     private List<TaskView> getTasks(List<TeamViewRow> rows) {
@@ -82,10 +89,10 @@ public class TeamViewService {
                 ));
     }
 
-    private ActualSpentTime actualTimeSpent(Integer actualTimeSpentHours, Integer actualTimeSpentMinutes) {
+    private ActualTimeSpent actualTimeSpent(Integer actualTimeSpentHours, Integer actualTimeSpentMinutes) {
         if(actualTimeSpentHours == null){
             return null;
         }
-        return new ActualSpentTime(actualTimeSpentHours, actualTimeSpentMinutes);
+        return new ActualTimeSpent(actualTimeSpentHours, actualTimeSpentMinutes);
     }
 }

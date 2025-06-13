@@ -1,12 +1,9 @@
 package tn.portfolio.reactive.team.controller;
 
 public record ActualSpentTime(int hours, int minutes) {
-    public static ActualSpentTime zero() {
-        return new ActualSpentTime(0,0);
+    public ActualSpentTime {
+        if (hours < 0 || minutes < 0) {
+            throw new IllegalArgumentException("Negative values not allowed");
+        }
     }
-
-    public ActualSpentTime add(ActualSpentTime other){
-        return new ActualSpentTime(hours + other.hours(), minutes + other.minutes());
-    }
-
 }

@@ -29,4 +29,12 @@ public interface TeamViewRepository extends R2dbcRepository<TeamViewRow, UUID> {
         WHERE t.id = :teamId
     """)
     Flux<TeamViewRow> findTeamViewByTeamId(UUID teamId);
+
+    @Query("""
+        SELECT
+            t.id AS team_id,
+            t.name AS team_name
+            FROM project_demo_reactive.teams t
+            """)
+    Flux<TeamsViewRow> findAllTeamsViewRows();
 }

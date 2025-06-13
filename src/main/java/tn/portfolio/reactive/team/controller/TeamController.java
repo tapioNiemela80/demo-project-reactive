@@ -2,11 +2,14 @@ package tn.portfolio.reactive.team.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import tn.portfolio.reactive.project.domain.ProjectTaskId;
 import tn.portfolio.reactive.team.domain.*;
 import tn.portfolio.reactive.team.infrastructure.TeamViewService;
 import tn.portfolio.reactive.team.service.TeamService;
+import tn.portfolio.reactive.team.view.TeamView;
+import tn.portfolio.reactive.team.view.TeamsView;
 
 import java.util.UUID;
 
@@ -81,8 +84,14 @@ public class TeamController {
         return teamService.removeMember(new TeamId(teamId), new TeamMemberId(memberId));
     }
 
+    @GetMapping
+    public Flux<TeamsView> findAll() {
+        return teamViewService.findAll();
+    }
+
     @GetMapping("/{teamId}")
     public Mono<TeamView> findOne(@PathVariable UUID teamId) {
-        return teamViewService.findOne(teamId);
+        return teamViewService.findOne(teamId)
+                .switchIfEmpty(Mono.error(new IllegalArgumentException("Unknown team "+teamId)));
     }
 }

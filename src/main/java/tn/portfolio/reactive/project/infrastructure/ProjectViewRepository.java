@@ -29,4 +29,12 @@ public interface ProjectViewRepository extends R2dbcRepository<ProjectTaskEntity
         WHERE p.id = :projectId
     """)
     Flux<ProjectTaskRow> findProjectWithTasks(UUID projectId);
+
+    @Query("""
+            SELECT p.id,
+            p.name,
+            p.description
+            FROM project_demo_reactive.projects p
+            """)
+    Flux<ProjectsViewRow> findAllProjectsViewRows();
 }

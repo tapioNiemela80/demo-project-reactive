@@ -2,6 +2,7 @@ package tn.portfolio.reactive.project.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import tn.portfolio.reactive.project.domain.Project;
 import tn.portfolio.reactive.project.domain.ProjectId;
@@ -9,6 +10,7 @@ import tn.portfolio.reactive.project.domain.ProjectTaskId;
 import tn.portfolio.reactive.project.infrastructure.ProjectViewService;
 import tn.portfolio.reactive.project.service.ProjectService;
 import tn.portfolio.reactive.project.view.ProjectView;
+import tn.portfolio.reactive.project.view.ProjectsView;
 
 import java.util.UUID;
 
@@ -51,6 +53,12 @@ public class ProjectController {
         return projectService.rename(new ProjectId(projectId), newName)
                 .then(); // palautetaan Mono<Void>
     }
+
+    @GetMapping
+    public Flux<ProjectsView> findAll(){
+        return projectViewService.findAll();
+    }
+
     @GetMapping("/{projectId}")
     public Mono<ProjectView> findById(@PathVariable UUID projectId){
         return projectViewService.getProjectView(projectId)

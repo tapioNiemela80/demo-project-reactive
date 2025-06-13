@@ -1,4 +1,4 @@
-package tn.portfolio.reactive.team.controller;
+package tn.portfolio.reactive.team.view;
 
 import java.util.UUID;
 
@@ -9,7 +9,7 @@ public record TaskView(
         UUID projectTaskId,
         String status,
         UUID assigneeId,
-        ActualSpentTime actualSpentTime
+        ActualTimeSpent actualSpentTime
 ) {
     public boolean isCompleted() {
         return actualSpentTime != null;
