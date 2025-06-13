@@ -6,7 +6,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import tn.portfolio.reactive.project.domain.ProjectTaskId;
 import tn.portfolio.reactive.team.domain.*;
-import tn.portfolio.reactive.team.infrastructure.TeamViewService;
+import tn.portfolio.reactive.team.view.TeamViewService;
 import tn.portfolio.reactive.team.service.TeamService;
 import tn.portfolio.reactive.team.view.TeamView;
 import tn.portfolio.reactive.team.view.TeamsView;

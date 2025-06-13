@@ -1,4 +1,4 @@
-package tn.portfolio.reactive.project.infrastructure;
+package tn.portfolio.reactive.project.view;
 
 import org.springframework.data.r2dbc.repository.Query;
 import org.springframework.data.r2dbc.repository.R2dbcRepository;
@@ -6,7 +6,7 @@ import reactor.core.publisher.Flux;
 
 import java.util.UUID;
 
-public interface ProjectViewRepository extends R2dbcRepository<ProjectTaskRow, UUID> {
+interface ProjectViewRepository extends R2dbcRepository<ProjectTaskRow, UUID> {
     @Query("""
         SELECT
         p.id AS id,

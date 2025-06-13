@@ -1,4 +1,4 @@
-package tn.portfolio.reactive.team.infrastructure;
+package tn.portfolio.reactive.team.view;
 
 import org.springframework.data.r2dbc.repository.Query;
 import org.springframework.data.r2dbc.repository.R2dbcRepository;

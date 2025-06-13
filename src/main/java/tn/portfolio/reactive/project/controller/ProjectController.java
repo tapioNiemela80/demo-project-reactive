@@ -7,7 +7,7 @@ import reactor.core.publisher.Mono;
 import tn.portfolio.reactive.project.domain.Project;
 import tn.portfolio.reactive.project.domain.ProjectId;
 import tn.portfolio.reactive.project.domain.ProjectTaskId;
-import tn.portfolio.reactive.project.infrastructure.ProjectViewService;
+import tn.portfolio.reactive.project.view.ProjectViewService;
 import tn.portfolio.reactive.project.service.ProjectService;
 import tn.portfolio.reactive.project.view.ProjectView;
 import tn.portfolio.reactive.project.view.ProjectsView;

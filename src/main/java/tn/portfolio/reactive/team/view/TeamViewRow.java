@@ -1,4 +1,4 @@
-package tn.portfolio.reactive.team.infrastructure;
+package tn.portfolio.reactive.team.view;
 
 import java.util.UUID;
 
