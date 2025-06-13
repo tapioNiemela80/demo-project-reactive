@@ -6,7 +6,7 @@ import reactor.core.publisher.Flux;
 
 import java.util.UUID;
 
-public interface ProjectViewRepository extends R2dbcRepository<ProjectTaskEntity, UUID> {
+public interface ProjectViewRepository extends R2dbcRepository<ProjectTaskRow, UUID> {
     @Query("""
         SELECT
         p.id AS id,
