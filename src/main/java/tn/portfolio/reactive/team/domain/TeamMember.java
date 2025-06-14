@@ -21,10 +21,13 @@ public class TeamMember {
         return new TeamMember(memberId, name, profession);
     }
 
+    boolean hasDetails(TeamMemberId memberId, String name, String profession) {
+        return hasId(memberId) && Objects.equals(name, this.name) && Objects.equals(profession, this.profession);
+    }
+
     boolean hasId(TeamMemberId expected) {
         return id.equals(expected);
     }
-
 
     @Override
     public boolean equals(Object o) {

@@ -34,30 +34,40 @@ class TeamTask {
     }
     TeamTask assignTo(TeamMemberId assigneeId){
         if (this.status != TeamTaskStatus.NOT_ASSIGNED) {
-            throw new IllegalArgumentException("Task already assigned or in progress.");
+            throw new TaskTransitionNotAllowedException("Task already assigned or in progress.");
         }
         return new TeamTask(id, projectTaskId, name, description, TeamTaskStatus.ASSIGNED, assigneeId, actualSpentTime);
     }
     TeamTask markInProgress(){
         if (this.status != TeamTaskStatus.ASSIGNED) {
-            throw new IllegalArgumentException("Task needs to be assigned before it can be put to in progress.");
+            throw new TaskTransitionNotAllowedException("Task needs to be assigned before it can be put to in progress.");
         }
         return new TeamTask(id, projectTaskId, name, description, TeamTaskStatus.IN_PROGRESS, assigneeId, actualSpentTime);
     }
     TeamTask complete(ActualSpentTime actualTimeWasSpent) {
         if (this.status != TeamTaskStatus.IN_PROGRESS) {
-            throw new IllegalArgumentException("task not in progress");
+            throw new TaskTransitionNotAllowedException("task not in progress");
         }
         return new TeamTask(id, projectTaskId, name, description, TeamTaskStatus.COMPLETED, null, actualTimeWasSpent);
     }
     TeamTask unassign() {
         if(this.status != TeamTaskStatus.ASSIGNED){
-            throw new IllegalArgumentException("Task is not assigned");
+            throw new TaskTransitionNotAllowedException("Task is not assigned");
         }
         return new TeamTask(id, projectTaskId, name, description, TeamTaskStatus.NOT_ASSIGNED, null, actualSpentTime);
     }
     boolean hasId(TeamTaskId expected) {
         return id.equals(expected);
+    }
+
+    boolean hasDetails(TeamTaskId taskId, ProjectTaskId projectTaskId, String name, String description, TeamMemberId assignee, ActualSpentTime actualSpentTime, TeamTaskStatus expectedStatus) {
+        return hasId(taskId)
+                && Objects.equals(projectTaskId, this.projectTaskId)
+                && Objects.equals(name, this.name)
+                && Objects.equals(description, this.description)
+                && Objects.equals(assignee, this.assigneeId)
+                && Objects.equals(actualSpentTime, this.actualSpentTime)
+                && expectedStatus == this.status;
     }
 
     boolean isAssignedTo(TeamMemberId memberId) {

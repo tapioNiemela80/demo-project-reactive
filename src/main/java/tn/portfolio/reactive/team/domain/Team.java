@@ -30,7 +30,6 @@ public class Team {
         this.tasks = tasks;
     }
 
-
     public TeamId getId() {
         return id;
     }
@@ -64,22 +63,19 @@ public class Team {
     }
 
     public boolean containsMember(TeamMemberId memberId, String name, String profession){
-        //return members.stream().anyMatch(member -> member.hasDetails(memberId, name, profession));
-        return false;
-    }
-/*
-    public boolean containsCompletedTask(TeamTaskId taskId, ProjectTaskId projectTaskId, String name, String description, UUID assignee, ActualSpentTime actualSpentTime){
-        return tasks.stream()
-                .anyMatch(task -> task.hasDetails(taskId, projectTaskId, name, description, assignee, actualSpentTime, TeamTaskStatus.COMPLETED));
+        return members.stream().anyMatch(member -> member.hasDetails(memberId, name, profession));
     }
 
-    public boolean containsUncompletedTask(TeamTaskId taskId, ProjectTaskId projectTaskId, String name, String description, UUID assignee, TeamTaskStatus expectedStatus){
+    public boolean containsCompletedTask(TeamTaskId taskId, ProjectTaskId projectTaskId, String name, String description, ActualSpentTime actualSpentTime){
+        return tasks.stream()
+                .anyMatch(task -> task.hasDetails(taskId, projectTaskId, name, description, null, actualSpentTime, TeamTaskStatus.COMPLETED));
+    }
+
+    public boolean containsUncompletedTask(TeamTaskId taskId, ProjectTaskId projectTaskId, String name, String description, TeamMemberId assignee, TeamTaskStatus expectedStatus){
         return tasks.stream()
                 .anyMatch(task -> task.hasDetails(taskId, projectTaskId, name, description, assignee, null, expectedStatus));
     }
 
-
- */
     public Team addTask(TeamTaskId taskId, ProjectTaskId projectTaskId, String name, String description){
         List<TeamTask> existingTasks = new ArrayList<>(tasks);
         existingTasks.add(TeamTask.createNew(taskId, projectTaskId, name, description));

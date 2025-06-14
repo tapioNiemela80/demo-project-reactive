@@ -22,11 +22,8 @@
         <java.version>17</java.version>
     </properties>
 
-	
-
-
     <dependencies>
-		
+
         <!-- Spring WebFlux (Reaktiivinen Web) -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -39,12 +36,12 @@
             <artifactId>spring-boot-starter-data-r2dbc</artifactId>
         </dependency>
 
-<!-- https://mvnrepository.com/artifact/org.postgresql/r2dbc-postgresql -->
-<dependency>
-    <groupId>org.postgresql</groupId>
-    <artifactId>r2dbc-postgresql</artifactId>
-    <version>1.0.7.RELEASE</version>
-</dependency>
+        <!-- https://mvnrepository.com/artifact/org.postgresql/r2dbc-postgresql -->
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>r2dbc-postgresql</artifactId>
+            <version>1.0.7.RELEASE</version>
+        </dependency>
         <!-- Flyway (HUOM! ei reaktiivinen, käytä vain migraatioihin) -->
         <dependency>
             <groupId>org.flywaydb</groupId>
@@ -55,6 +52,28 @@
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
+        </dependency>
+
+        <!-- testing -->
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>5.10.2</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <version>5.12.0</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-junit-jupiter</artifactId>
+            <version>5.12.0</version>
+            <scope>test</scope>
         </dependency>
 
     </dependencies>
