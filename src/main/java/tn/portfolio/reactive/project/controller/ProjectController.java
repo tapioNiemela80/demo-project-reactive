@@ -1,6 +1,7 @@
 package tn.portfolio.reactive.project.controller;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -12,6 +13,7 @@ import tn.portfolio.reactive.project.service.ProjectService;
 import tn.portfolio.reactive.project.view.ProjectView;
 import tn.portfolio.reactive.project.view.ProjectsView;
 
+import java.net.URI;
 import java.util.UUID;
 
 @RestController
@@ -25,7 +27,7 @@ public class ProjectController {
     }
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Mono<UUID> createProject(@RequestBody CreateProjectRequest request) {
+    public Mono<ResponseEntity<Void>> createProject(@RequestBody CreateProjectRequest request) {
         return projectService.createProject(
                         request.name(),
                         request.description(),
@@ -34,18 +36,22 @@ public class ProjectController {
                         request.contactPersonInput()
                 )
                 .map(Project::getId)
-                .map(ProjectId::value);
+                .map(projectId -> uri("projects/"+projectId.value()))
+                .map(location -> ResponseEntity.created(location).build());
+
     }
     @PostMapping("/{projectId}/tasks")
     @ResponseStatus(HttpStatus.CREATED)
-    public Mono<UUID> addTask(@PathVariable UUID projectId, @RequestBody AddTaskRequest request) {
+    public Mono<ResponseEntity<Void>> addTask(@PathVariable UUID projectId, @RequestBody AddTaskRequest request) {
         return projectService.addTaskToProject(
                         new ProjectId(projectId),
                         request.name(),
                         request.description(),
                         request.estimation()
                 )
-                .map(ProjectTaskId::value);
+                .map(ProjectTaskId::value)
+                .map(taskId -> uri("projects/"+projectId+"/tasks/"+taskId))
+                .map(location -> ResponseEntity.created(location).build());
     }
     @PostMapping("/{projectId}/rename")
     @ResponseStatus(HttpStatus.NO_CONTENT)
@@ -60,8 +66,13 @@ public class ProjectController {
     }
 
     @GetMapping("/{projectId}")
-    public Mono<ProjectView> findById(@PathVariable UUID projectId){
+    public Mono<ResponseEntity<ProjectView>> findById(@PathVariable UUID projectId){
         return projectViewService.getProjectView(projectId)
+                .map(data -> ResponseEntity.ok(data))
                 .switchIfEmpty(Mono.error(new IllegalArgumentException("Unknown project "+projectId)));
+    }
+
+    private URI uri(String value){
+        return URI.create(value);
     }
 }
