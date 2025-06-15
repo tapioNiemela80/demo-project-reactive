@@ -25,13 +25,14 @@ public class ProjectService {
         this.eventPublisher = eventPublisher;
     }
 
-    public Mono<Project> createProject(String name, String description,
+    public Mono<ProjectId> createProject(String name, String description,
                                        LocalDate plannedEndDate,
                                        tn.portfolio.reactive.project.controller.TimeEstimation timeEstimation,
                                        ContactPersonInput contactPersonInput) {
         return idService.newProjectId()
                 .map(projectId -> projectFactory.createNew(projectId, name, description, plannedEndDate, timeEstimation, contactPersonInput))
-                .flatMap(projects::save);
+                .flatMap(projects::save)
+                .map(Project::getId);
     }
 
     public Mono<ProjectTaskId> addTaskToProject(ProjectId projectId, String title, String description,
@@ -59,10 +60,4 @@ public class ProjectService {
         return new TimeEstimation(timeEstimation.hours(), timeEstimation.minutes());
     }
 
-    public Mono<Project> rename(ProjectId projectId, String newName) {
-        return projects.findById(projectId)
-                .switchIfEmpty(Mono.error(new IllegalArgumentException("Project not found: " + projectId)))
-                .map(project -> project.rename(newName))
-                .flatMap(projects::save);
-    }
 }

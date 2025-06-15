@@ -5,12 +5,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-import tn.portfolio.reactive.project.domain.Project;
 import tn.portfolio.reactive.project.domain.ProjectId;
 import tn.portfolio.reactive.project.domain.ProjectTaskId;
-import tn.portfolio.reactive.project.view.ProjectViewService;
 import tn.portfolio.reactive.project.service.ProjectService;
 import tn.portfolio.reactive.project.view.ProjectView;
+import tn.portfolio.reactive.project.view.ProjectViewService;
 import tn.portfolio.reactive.project.view.ProjectsView;
 
 import java.net.URI;
@@ -35,7 +34,6 @@ public class ProjectController {
                         request.estimation(),
                         request.contactPersonInput()
                 )
-                .map(Project::getId)
                 .map(projectId -> uri("projects/"+projectId.value()))
                 .map(location -> ResponseEntity.created(location).build());
 
@@ -52,12 +50,6 @@ public class ProjectController {
                 .map(ProjectTaskId::value)
                 .map(taskId -> uri("projects/"+projectId+"/tasks/"+taskId))
                 .map(location -> ResponseEntity.created(location).build());
-    }
-    @PostMapping("/{projectId}/rename")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    public Mono<Void> rename(@PathVariable UUID projectId, @RequestBody String newName) {
-        return projectService.rename(new ProjectId(projectId), newName)
-                .then(); // palautetaan Mono<Void>
     }
 
     @GetMapping
