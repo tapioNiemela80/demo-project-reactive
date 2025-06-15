@@ -37,7 +37,8 @@ public class DomainEventListeners {
     public Mono<Void> onTaskAdded(TaskAddedToProjectEvent event) {
         return projects.findById(event.projectId())
                 .flatMap(project -> Mono.justOrEmpty(getEmail(project, event.taskId())))
-                .flatMap(email -> emailClientService.send(email));
+                .flatMap(email -> emailClientService.send(email))
+                .doOnError(err -> log.error("Got error on listening TaskAddedToProjectEvent %s".formatted(event), err));
     }
 
     private Optional<EmailMessage> getEmail(Project project, ProjectTaskId taskId) {
