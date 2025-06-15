@@ -30,7 +30,6 @@ public class TeamController {
         return teamService.createTeam(
                         request.name()
                 )
-                .map(Team::getId)
                 .map(TeamId::value);
     }
 

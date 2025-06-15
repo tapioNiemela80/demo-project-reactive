@@ -32,10 +32,11 @@ public class TeamService {
         this.teamFactory = teamFactory;
     }
 
-    public Mono<Team> createTeam(String name) {
+    public Mono<TeamId> createTeam(String name) {
         return idService.newTeamId()
                 .map(teamId -> teamFactory.create(teamId, name))
-                .flatMap(teams::save);
+                .flatMap(teams::save)
+                .map(Team::getId);
     }
 
     public Mono<Void> assignTask(TeamId teamId, TeamTaskId taskID, TeamMemberId toMemberId) {
