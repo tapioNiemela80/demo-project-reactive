@@ -34,7 +34,7 @@ public class ProjectController {
                         request.estimation(),
                         request.contactPersonInput()
                 )
-                .map(projectId -> uri("projects/"+projectId.value()))
+                .map(projectId -> uri("/projects/"+projectId.value()))
                 .map(location -> ResponseEntity.created(location).build());
 
     }
@@ -48,7 +48,7 @@ public class ProjectController {
                         request.estimation()
                 )
                 .map(ProjectTaskId::value)
-                .map(taskId -> uri("projects/"+projectId+"/tasks/"+taskId))
+                .map(taskId -> uri("/projects/"+projectId+"/tasks/"+taskId))
                 .map(location -> ResponseEntity.created(location).build());
     }
 
