@@ -66,21 +66,13 @@ public final class Project {
         );
     }
 
-
-    public Project rename(String newName) {
-        return new Project(
-                id, newName, description, createdAt, plannedEndDate, status,
-                version, timeEstimation, tasks, contactPersonName, contactPersonEmail
-        );
-    }
-
-    public Project addTask(ProjectTaskId taskId, String taskName, String taskDescription, TimeEstimation estimation){
-        if(isCompleted()){
+    public Project addTask(ProjectTaskId taskId, String taskName, String taskDescription, TimeEstimation estimation) {
+        if (isCompleted()) {
             throw new ProjectAlreadyCompletedException(id);
         }
         var currentTotalEstimation = getEstimationOfAllTasks();
         var newEstimation = currentTotalEstimation.add(estimation);
-        if (newEstimation.exceedsOther(timeEstimation)){
+        if (newEstimation.exceedsOther(timeEstimation)) {
             throw new ProjectTimeEstimationWouldBeExceededException("Cannot add any more tasks, project estimation would be exceeded");
         }
         List<ProjectTask> existingTasks = new ArrayList<>(tasks);
@@ -106,21 +98,21 @@ public final class Project {
         );
     }
 
-    private static boolean areAllTasksCompleted(Collection<ProjectTask> tasks){
+    private static boolean areAllTasksCompleted(Collection<ProjectTask> tasks) {
         return tasks.stream()
                 .allMatch(ProjectTask::isCompleted);
     }
 
-    private Function<ProjectTask, ProjectTask> processTask(ProjectTaskId projectTaskId, ActualSpentTime actualSpentTime){
+    private Function<ProjectTask, ProjectTask> processTask(ProjectTaskId projectTaskId, ActualSpentTime actualSpentTime) {
         return task -> {
-            if(task.hasId(projectTaskId)){
+            if (task.hasId(projectTaskId)) {
                 return task.complete(actualSpentTime);
             }
             return task;
         };
     }
 
-    public Optional<ProjectTaskSnapshot> getTask(ProjectTaskId projectTaskId){
+    public Optional<ProjectTaskSnapshot> getTask(ProjectTaskId projectTaskId) {
         return tasks.stream()
                 .filter(task -> task.hasId(projectTaskId))
                 .map(task -> task.toSnapshot(id))
@@ -134,36 +126,19 @@ public final class Project {
                 .orElseThrow(() -> new UnknownProjectTaskIdException(projectTaskId));
     }
 
-    public TimeEstimation getEstimationOfAllTasks(){
+    public TimeEstimation getEstimationOfAllTasks() {
         return tasks.stream()
                 .map(ProjectTask::getEstimation)
                 .reduce(TimeEstimation::add)
                 .orElseGet(TimeEstimation::zeroEstimation);
     }
 
-    public boolean isCompleted(){
+    public boolean isCompleted() {
         return status == ProjectStatus.COMPLETED;
     }
 
-
     public ProjectId getId() {
         return id;
-    }
-    @Override
-    public String toString() {
-        return "Project{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", description='" + description + '\'' +
-                ", createdAt=" + createdAt +
-                ", estimatedEndDate=" + plannedEndDate +
-                ", status=" + status +
-                ", version=" + version +
-                ", estimation=" + timeEstimation +
-                ", tasks=" + tasks +
-                ", contactPersonName='" + contactPersonName + '\'' +
-                ", contactPersonEmail='" + contactPersonEmail + '\'' +
-                '}';
     }
 
     @Override
