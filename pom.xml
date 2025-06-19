@@ -8,7 +8,7 @@
     <artifactId>project-demo-reactive</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>project-demo-reactive</name>
-    <description>Portfolio demo reactive projekti (DDD ja Spring data JDBC)</description>
+    <description>Portfolio demo reactive DDD project</description>
     <packaging>jar</packaging>
 
     <parent>
