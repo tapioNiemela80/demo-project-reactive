@@ -118,7 +118,7 @@ Tapahtumien julkaisu ja niiden käsittely on erotettu toisistaan. Julkaisija ei 
 - Tavoitteena on ollut pitää aggregate-malli keskittyneenä toimintoihin (write). Tietojen hakeminen(read) on toteutettu erikseen suorilla SQL-kyselyillä. Read-malli on tehty kevyesti, koska se ei ole oleellinen osa demoa
 - Yksittäisen projektin hakeminen palauttaa näkymän jossa sen sisältämien taskien aikamääreitä on laskettu yhteen. Toinen tapa toteuttaa vastaava olisi ollut kirjoittaa ne tietokantaan päivitysten yhteydessä; tässä valittiin kuitenkin yksinkertaisempi tapa
 - Yksikkötestit on tehty vain kriittisille toiminnallisuuksille
-- ns. puhdas domain-malli olisi helposti käyttöönotettavissa myös toisessa portfolio-projektissa https://github.com/tapioNiemela80/demo-project
+- ns. puhdas domain-malli olisi helposti käyttöönotettavissa myös toisessa portfolio-projektissa [https://github.com/tapioNiemela80/demo-project](https://github.com/tapioNiemela80/demo-project-spring-data-jdbc)
 
 ## Kehittäjä
 
