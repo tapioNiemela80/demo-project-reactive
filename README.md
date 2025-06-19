@@ -60,6 +60,16 @@ Tietyt aggregaattitapahtumat laukaisevat muita päivityksiä järjestelmässä:
 - `TaskAddedToProjectEvent`: syntyy, kun uusi taski lisätään projektille, käsittelijä lähettää tästä sähköpostia projektin yhteyshenkilölle. Tämä demonstroi "side-effect":in käsittelyä
 - `TeamTaskCompletedEvent`: kun tiimi merkitsee tehtävän valmiiksi, tämän eventin käsittelijä päivittää projektin vastaavan taskin valmiiksi toteutuneen työmäärän kanssa. Projekti itse huolehtii itse siitä, että projekti merkitään valmiiksi jos kaikki sen tehtävät ovat valmiita. Tämän eventin käsittely demonstroi DDD:n perusperiaatetta, että kahta aggregate roottia ei saa tallentaa yhdessä transaktiossa. Eventin käsittely on myös idempotentti. Jos sen käsittelyn aikana tapahtuu optimistisen lukituksen virhe, yritetään uudestaan. Jos puolestaan toinen osapuoli on yrittänyt lisätä tehtävää, tarkistetaan onko projekti jo valmis ja hylätään sen aiheuttama päivitys (jos projekti on jo valmis)
 
+### Tekniset huomiot
+Eventit välitetään reaktiivisesti komponentin ReactiveDomainEventPublisher kautta. Kyseessä on ns. hot source, mikä tarkoittaa:
+
+- Eventit alkavat virrata heti kun niitä julkaistaan, eikä niitä säilötä uusille tilaajille
+- Vain ne käsittelijät, jotka ovat jo rekisteröityneet ennen eventin julkaisua, saavat eventin
+- Kaikki kuuntelijat rekisteröidään sovelluksen käynnistyksessä (ReactiveEventListenerRegistrar-komponentti), jolloin voidaan varmistaa, että ne ehtivät kuulla kaikki eventit
+- Käsittelijämetodit määritellään annotaatiolla @ReactiveEventListener, ja niiden tulee palauttaa Mono<Void> tai Mono<T>. Tämä mahdollistaa ei-blokkaavan, ketjutettavan käsittelyn
+
+#### Löyhä kytkentä
+Tapahtumien julkaisu ja niiden käsittely on erotettu toisistaan. Julkaisija ei tunne käsittelijöitä eikä ole riippuvainen siitä, onko yksittäinen eventille kuuntelijaa lainkaan. Tämä parantaa modulaarisuutta, testattavuutta ja ylläpidettävyyttä — komponentit voivat kehittyä itsenäisesti.
 
 ## REST-endpointit (esimerkit)
 
