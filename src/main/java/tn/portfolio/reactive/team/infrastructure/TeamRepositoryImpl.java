@@ -27,25 +27,6 @@ class TeamRepositoryImpl implements TeamRepository {
     }
 
     @Override
-    public Mono<Team> findById(TeamId teamId) {
-        UUID id = teamId.value();
-        Mono<TeamEntity> teamMono = teamEntityRepository.findById(id);
-        Flux<TeamMemberEntity> memberFlux = teamMemberEntityRepository.findByTeamId(id);
-        Flux<TeamTaskEntity> taskFlux = teamTaskEntityRepository.findByTeamId(id);
-
-        return Mono.zip(teamMono, memberFlux.collectList(), taskFlux.collectList())
-                .map(this::toTeam);
-    }
-
-    private Team toTeam(Tuple3<TeamEntity, List<TeamMemberEntity>, List<TeamTaskEntity>> tuple) {
-        TeamEntity entity = tuple.getT1();
-        List<TeamMemberEntity> memberEntities = tuple.getT2();
-        List<TeamTaskEntity> taskEntities = tuple.getT3();
-        TeamDto dto = TeamPersistenceMapper.fromEntity(entity, memberEntities, taskEntities);
-        return TeamDomainMapper.fromDto(dto);
-    }
-
-    @Override
     @Transactional
     public Mono<Team> save(Team team) {
         boolean isNew = team.isNew();
@@ -75,6 +56,17 @@ class TeamRepositoryImpl implements TeamRepository {
     }
 
     @Override
+    public Mono<Team> findById(TeamId teamId) {
+        UUID id = teamId.value();
+        Mono<TeamEntity> teamMono = teamEntityRepository.findById(id);
+        Flux<TeamMemberEntity> memberFlux = teamMemberEntityRepository.findByTeamId(id);
+        Flux<TeamTaskEntity> taskFlux = teamTaskEntityRepository.findByTeamId(id);
+
+        return Mono.zip(teamMono, memberFlux.collectList(), taskFlux.collectList())
+                .map(this::asTeam);
+    }
+
+    @Override
     public Mono<Team> findByProjectTaskId(ProjectTaskId projectTaskId) {
         return teamTaskEntityRepository.findByProjectTaskId(projectTaskId.value())
                 .flatMap(teamTask -> {
@@ -84,8 +76,16 @@ class TeamRepositoryImpl implements TeamRepository {
                     Flux<TeamTaskEntity> tasksFlux = teamTaskEntityRepository.findByTeamId(teamId);
 
                     return Mono.zip(teamMono, membersFlux.collectList(), tasksFlux.collectList())
-                            .map(tuple -> toTeam(tuple));
+                            .map(this::asTeam);
                 });
+    }
+
+    private Team asTeam(Tuple3<TeamEntity, List<TeamMemberEntity>, List<TeamTaskEntity>> tuple) {
+        TeamEntity entity = tuple.getT1();
+        List<TeamMemberEntity> memberEntities = tuple.getT2();
+        List<TeamTaskEntity> taskEntities = tuple.getT3();
+        TeamDto dto = TeamPersistenceMapper.fromEntity(entity, memberEntities, taskEntities);
+        return TeamDomainMapper.fromDto(dto);
     }
 
 }

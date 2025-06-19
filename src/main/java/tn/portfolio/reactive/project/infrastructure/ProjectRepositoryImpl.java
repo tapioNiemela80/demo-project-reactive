@@ -16,7 +16,6 @@ import java.util.UUID;
 
 @Repository
 class ProjectRepositoryImpl implements ProjectRepository {
-
     private final ProjectEntityRepository projectEntityRepository;
     private final ProjectTaskEntityRepository taskEntityRepository;
 
@@ -33,10 +32,10 @@ class ProjectRepositoryImpl implements ProjectRepository {
         Flux<ProjectTaskEntity> taskFlux = taskEntityRepository.findByProjectId(id);
 
         return Mono.zip(projectMono, taskFlux.collectList())
-                .map(this::toProject);
+                .map(this::asTeam);
     }
 
-    private Project toProject(Tuple2<ProjectEntity, List<ProjectTaskEntity>> tuple) {
+    private Project asTeam(Tuple2<ProjectEntity, List<ProjectTaskEntity>> tuple) {
         ProjectEntity entity = tuple.getT1();
         List<ProjectTaskEntity> taskEntities = tuple.getT2();
 
@@ -75,14 +74,15 @@ class ProjectRepositoryImpl implements ProjectRepository {
     public Mono<Project> findByTaskId(ProjectTaskId taskId) {
         UUID id = taskId.value();
         return taskEntityRepository.findById(id)
-                .flatMap(taskEntity -> toProject(taskEntity));
+                .flatMap(this::toProject);
     }
 
     private Mono<Project> toProject(ProjectTaskEntity taskEntity) {
         UUID projectId = taskEntity.getProjectId();
 
         Mono<ProjectEntity> projectMono = projectEntityRepository.findById(projectId);
-        Mono<List<ProjectTaskEntity>> tasksMono = taskEntityRepository.findByProjectId(projectId).collectList();
+        Mono<List<ProjectTaskEntity>> tasksMono = taskEntityRepository.findByProjectId(projectId)
+                .collectList();
 
         return Mono.zip(projectMono, tasksMono)
                 .map(tuple -> {
