@@ -20,7 +20,6 @@ public final class Project {
     private final int version;
     private final TimeEstimation timeEstimation;
     private final List<ProjectTask> tasks;
-
     private final String contactPersonName;
     private final String contactPersonEmail;
 
@@ -48,9 +47,9 @@ public final class Project {
         this.contactPersonEmail = contactPersonEmail;
     }
 
-    public static Project create(ProjectId id, String name, String description, LocalDateTime createdAt,
-                                 LocalDate plannedEndDate,
-                                 TimeEstimation timeEstimation, String contactPersonName, String contactPersonEmail) {
+    public static Project createNew(ProjectId id, String name, String description, LocalDateTime createdAt,
+                                    LocalDate plannedEndDate,
+                                    TimeEstimation timeEstimation, String contactPersonName, String contactPersonEmail) {
         return new Project(
                 id,
                 name,
