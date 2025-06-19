@@ -4,7 +4,6 @@ spring:
     username: user
     password: ${POSTGRES_PASSWORD}
 
-  # Flyway käyttää JDBC:tä (ei reaktiivinen, mutta toimii hyvin migraatioihin)
   flyway:
     enabled: true
     url: jdbc:postgresql://localhost:5432/mydb?currentSchema=project_demo_reactive
@@ -14,7 +13,6 @@ spring:
     schemas: project_demo_reactive
 
   datasource:
-    # Tarvitaan vain Flywaylle
     driver-class-name: org.postgresql.Driver
 
   main:
@@ -26,10 +24,6 @@ server:
 logging:
   level:
     root: INFO
-    org.springframework.r2dbc.core: DEBUG
-    org.springframework.data.r2dbc.core: DEBUG
-    io.r2dbc.postgresql.QUERY: DEBUG
-    io.r2dbc.postgresql.PARAM: DEBUG
 
 email:
   sender: demo.project@example.com

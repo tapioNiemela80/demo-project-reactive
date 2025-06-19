@@ -38,7 +38,7 @@ public class TeamController {
     @ResponseStatus(HttpStatus.CREATED)
     public Mono<ResponseEntity<Void>> addMember(@PathVariable UUID teamId, @RequestBody AddMemberRequest request) {
         return teamService.addMember(new TeamId(teamId), request.name(), request.profession())
-                .map(memberId -> uri("/teams/"+teamId+"/members/"+memberId))
+                .map(memberId -> uri("/teams/"+teamId+"/members/"+memberId.value()))
                 .map(location -> ResponseEntity.created(location).build());
     }
 
@@ -53,7 +53,7 @@ public class TeamController {
     @ResponseStatus(HttpStatus.CREATED)
     public Mono<ResponseEntity<Void>> addTask(@PathVariable UUID teamId, @PathVariable UUID projectTaskId){
         return teamService.addTask(new TeamId(teamId), new ProjectTaskId(projectTaskId))
-                .map(taskId -> uri("/teams/"+teamId+"/tasks/"+taskId))
+                .map(taskId -> uri("/teams/"+teamId+"/tasks/"+taskId.value()))
                 .map(location -> ResponseEntity.created(location).build());
     }
 
