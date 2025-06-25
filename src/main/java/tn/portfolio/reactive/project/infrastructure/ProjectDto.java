@@ -20,4 +20,5 @@ public record ProjectDto(
         String contactPersonName,
         String contactPersonEmail,
         List<ProjectTaskDto> tasks
-) {}
+) {
+}

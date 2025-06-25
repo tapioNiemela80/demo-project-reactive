@@ -36,7 +36,7 @@ class ProjectTaskEntity implements Persistable<UUID> {
     private UUID projectId;
 
     @PersistenceCreator
-    ProjectTaskEntity(UUID id, String title, String description, int estimatedTimeHours, int estimatedTimeMinutes, TaskStatus taskStatus, UUID projectId, Integer actualTimeSpentHours, Integer actualTimeSpentMinutes){
+    ProjectTaskEntity(UUID id, String title, String description, int estimatedTimeHours, int estimatedTimeMinutes, TaskStatus taskStatus, UUID projectId, Integer actualTimeSpentHours, Integer actualTimeSpentMinutes) {
         this.id = id;
         this.title = title;
         this.description = description;

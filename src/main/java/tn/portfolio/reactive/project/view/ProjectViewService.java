@@ -15,7 +15,7 @@ public class ProjectViewService {
         this.repository = repository;
     }
 
-    public Flux<ProjectsView> findAll(){
+    public Flux<ProjectsView> findAll() {
         return repository.findAllProjectsViewRows()
                 .map(data -> new ProjectsView(data.id(), data.name(), data.description()));
     }

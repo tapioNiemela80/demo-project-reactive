@@ -7,7 +7,7 @@ import tn.portfolio.reactive.team.infrastructure.TeamTaskDto;
 import java.util.Objects;
 import java.util.UUID;
 
-class TeamTask {
+final class TeamTask {
     private final TeamTaskId id;
     private final ProjectTaskId projectTaskId;
     private final String name;

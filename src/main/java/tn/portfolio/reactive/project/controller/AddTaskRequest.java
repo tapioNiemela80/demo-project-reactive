@@ -4,4 +4,5 @@ public record AddTaskRequest(
         String name,
         String description,
         TimeEstimation estimation
-) {}
+) {
+}

@@ -7,4 +7,8 @@ public class ProjectAlreadyCompletedException extends RuntimeException {
         super("Project %s already completed".formatted(projectId));
         this.projectId = projectId;
     }
+
+    public ProjectId getProjectId() {
+        return projectId;
+    }
 }

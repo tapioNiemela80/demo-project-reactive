@@ -18,7 +18,7 @@ public record ProjectTaskDto(
         UUID projectId
 ) {
     public Optional<ActualSpentTime> actualTimeSpent() {
-        if(actualTimeSpentHours == null){
+        if (actualTimeSpentHours == null) {
             return Optional.empty();
         }
         return Optional.of(new ActualSpentTime(actualTimeSpentHours, actualTimeSpentMinutes));

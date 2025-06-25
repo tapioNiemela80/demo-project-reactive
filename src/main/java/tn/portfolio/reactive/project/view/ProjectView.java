@@ -11,17 +11,18 @@ public record ProjectView(UUID id,
                           TimeEstimate initialEstimation,
                           List<TaskView> tasks) {
 
-    public TimeEstimate getRemainingEstimation(){
+    public TimeEstimate getRemainingEstimation() {
         return initialEstimation.subtract(getCompletedEstimation());
     }
-    public TimeEstimate getCompletedEstimation(){
+
+    public TimeEstimate getCompletedEstimation() {
         return tasks.stream()
                 .filter(TaskView::isCompleted)
                 .map(TaskView::timeEstimate)
                 .reduce(TimeEstimate.zeroEstimation(), TimeEstimate::add);
     }
 
-    public ActualTimeSpent getActualTimeSpent(){
+    public ActualTimeSpent getActualTimeSpent() {
         return tasks.stream()
                 .filter(TaskView::isCompleted)
                 .map(TaskView::actualTimeSpent)

@@ -6,7 +6,7 @@ import tn.portfolio.reactive.team.domain.TeamId;
 
 @Component
 class TeamFactory {
-    Team create(TeamId id, String name){
+    Team create(TeamId id, String name) {
         return Team.createNew(id, name);
     }
 }

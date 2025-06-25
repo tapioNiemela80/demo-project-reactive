@@ -8,4 +8,5 @@ public record CreateProjectRequest(
         LocalDate estimatedEndDate,
         TimeEstimation estimation,
         ContactPersonInput contactPersonInput
-) {}
+) {
+}

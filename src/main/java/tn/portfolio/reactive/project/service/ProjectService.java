@@ -26,9 +26,9 @@ public class ProjectService {
     }
 
     public Mono<ProjectId> createProject(String name, String description,
-                                       LocalDate plannedEndDate,
-                                       tn.portfolio.reactive.project.controller.TimeEstimation timeEstimation,
-                                       ContactPersonInput contactPersonInput) {
+                                         LocalDate plannedEndDate,
+                                         tn.portfolio.reactive.project.controller.TimeEstimation timeEstimation,
+                                         ContactPersonInput contactPersonInput) {
         return idService.newProjectId()
                 .map(projectId -> projectFactory.createNew(projectId, name, description, plannedEndDate, timeEstimation, contactPersonInput))
                 .flatMap(projects::save)
@@ -51,7 +51,7 @@ public class ProjectService {
                 .thenReturn(taskId);
     }
 
-    private Mono<Project> findProject(ProjectId projectId){
+    private Mono<Project> findProject(ProjectId projectId) {
         return projects.findById(projectId)
                 .switchIfEmpty(Mono.error(new UnknownProjectIdException(projectId)));
     }

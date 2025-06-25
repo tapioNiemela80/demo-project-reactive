@@ -7,4 +7,8 @@ public class UnknownTeamMemberIdException extends RuntimeException {
         super("Unknown team member %s".formatted(teamMemberId));
         this.teamMemberId = teamMemberId;
     }
+
+    public TeamMemberId getTeamMemberId() {
+        return teamMemberId;
+    }
 }

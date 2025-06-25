@@ -1,7 +1,5 @@
 package tn.portfolio.reactive.project.domain;
 
-// ProjectTask.java
-
 import tn.portfolio.reactive.common.domain.ActualSpentTime;
 import tn.portfolio.reactive.project.infrastructure.ProjectTaskDto;
 
@@ -62,19 +60,6 @@ final class ProjectTask {
 
     public boolean isCompleted() {
         return taskStatus == TaskStatus.COMPLETE;
-    }
-
-    @Override
-    public String toString() {
-        return "ProjectTask{" +
-                "id=" + id +
-                ", name='" + title + '\'' +
-                ", description='" + description + '\'' +
-                ", estimation=" + timeEstimation +
-                ", taskStatus=" + taskStatus +
-                ", actualSpentTime=" + actualSpentTime +
-                ", projectId=" + projectId +
-                '}';
     }
 
     @Override

@@ -20,7 +20,7 @@ class ProjectFactory {
     Project createNew(ProjectId id, String name, String description,
                       LocalDate plannedEndDate,
                       tn.portfolio.reactive.project.controller.TimeEstimation timeEstimation,
-                      ContactPersonInput contactPersonInput){
+                      ContactPersonInput contactPersonInput) {
         return Project.createNew(id, name, description, dateService.now(), plannedEndDate, toDomain(timeEstimation), contactPersonInput.name(), contactPersonInput.email());
     }
 

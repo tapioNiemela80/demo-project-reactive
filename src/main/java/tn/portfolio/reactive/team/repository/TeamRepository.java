@@ -7,6 +7,8 @@ import tn.portfolio.reactive.team.domain.TeamId;
 
 public interface TeamRepository {
     Mono<Team> findById(TeamId id);
+
     Mono<Team> save(Team team);
+
     Mono<Team> findByProjectTaskId(ProjectTaskId projectTaskId);
 }

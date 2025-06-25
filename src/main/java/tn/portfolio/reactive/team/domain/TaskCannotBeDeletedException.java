@@ -6,4 +6,8 @@ public class TaskCannotBeDeletedException extends RuntimeException {
         super("Task %s needs to be unassigned before it can be deleted".formatted(taskId));
         this.taskId = taskId;
     }
+
+    public TeamTaskId getTaskId() {
+        return taskId;
+    }
 }

@@ -1,5 +1,6 @@
 package tn.portfolio.reactive.project.domain;
-public class UnknownProjectTaskIdException extends RuntimeException{
+
+public class UnknownProjectTaskIdException extends RuntimeException {
     private final ProjectTaskId taskId;
 
     public UnknownProjectTaskIdException(ProjectTaskId taskId) {

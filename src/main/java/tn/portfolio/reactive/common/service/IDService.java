@@ -11,14 +11,7 @@ import tn.portfolio.reactive.team.domain.TeamTaskId;
 import java.util.UUID;
 
 @Component
-public class IDService {
-    UUID newTaskId(){
-        return UUID.randomUUID();
-    }
-
-    public Mono<UUID> generateId() {
-        return Mono.fromSupplier(UUID::randomUUID); // tai vaikkapa ulkoinen järjestelmä
-    }
+public class IDService {    //in theory UUIDs could be fetched from external systems also
 
     public Mono<ProjectTaskId> newProjectTaskId() {
         return Mono.fromSupplier(UUID::randomUUID)
@@ -30,17 +23,17 @@ public class IDService {
                 .map(ProjectId::new);
     }
 
-    public Mono<TeamId> newTeamId(){
+    public Mono<TeamId> newTeamId() {
         return Mono.fromSupplier(UUID::randomUUID)
                 .map(TeamId::new);
     }
 
-    public Mono<TeamMemberId> newTeamMemberId(){
+    public Mono<TeamMemberId> newTeamMemberId() {
         return Mono.fromSupplier(UUID::randomUUID)
                 .map(TeamMemberId::new);
     }
 
-    public Mono<TeamTaskId> newTeamTaskId(){
+    public Mono<TeamTaskId> newTeamTaskId() {
         return Mono.fromSupplier(UUID::randomUUID)
                 .map(TeamTaskId::new);
     }

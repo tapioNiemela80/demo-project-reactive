@@ -9,7 +9,13 @@ record ProjectTaskRow(UUID id,
                       Integer projectEstimateMinutes,
                       String projectStatus,
                       String contactPersonEmail,
-                      UUID taskId, String taskTitle, String taskDescription,
-                      String taskStatus,                       Integer taskEstimateHours,
-                      Integer taskEstimateMinutes, Integer actualHours, Integer actualMinutes) {
+
+                      UUID taskId,
+                      String taskTitle,
+                      String taskDescription,
+                      String taskStatus,
+                      Integer taskEstimateHours,
+                      Integer taskEstimateMinutes,
+                      Integer actualHours,
+                      Integer actualMinutes) {
 }

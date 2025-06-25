@@ -20,7 +20,7 @@ class ProjectRepositoryImpl implements ProjectRepository {
     private final ProjectTaskEntityRepository taskEntityRepository;
 
     ProjectRepositoryImpl(ProjectEntityRepository projectEntityRepository,
-                                 ProjectTaskEntityRepository taskEntityRepository) {
+                          ProjectTaskEntityRepository taskEntityRepository) {
         this.projectEntityRepository = projectEntityRepository;
         this.taskEntityRepository = taskEntityRepository;
     }
