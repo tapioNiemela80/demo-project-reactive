@@ -1,6 +1,6 @@
 # Portfolio: Kevyt reaktiivinen projektinhallintamalli
 
-Tämä on esimerkki kevytprojektinhallintamallista, jossa tiimit ja projektit toimivat domain-aggregaatteina. Projektin tavoitteena on havainnollistaa domain-keskeistä arkkitehtuuria, jossa liiketoimintasäännöt asuvat aggregaateissa, ei serviceissä. Käytössä on lisäksi reaktiivinen malli, jossa puhdas domain-malli on eriytetty tietokantakerroksesta ns. mappereilla
+Tämä on esimerkki kevyestä projektinhallintamallista, jossa tiimit ja projektit toimivat domain-aggregaatteina. Esimerkin tavoitteena on havainnollistaa domain-keskeistä arkkitehtuuria, jossa liiketoimintasäännöt asuvat aggregaateissa, ei serviceissä. Käytössä on lisäksi reaktiivinen malli, jossa puhdas domain-malli on eriytetty tietokantakerroksesta ns. mappereilla
 
 
 ## Tavoite
