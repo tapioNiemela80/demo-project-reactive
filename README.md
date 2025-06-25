@@ -120,11 +120,27 @@ Tapahtumien julkaisu ja niiden käsittely on erotettu toisistaan. Julkaisija ei 
 - Yksikkötestit on tehty vain kriittisille toiminnallisuuksille
 - ns. puhdas domain-malli olisi helposti käyttöönotettavissa myös toisessa portfolio-projektissa [https://github.com/tapioNiemela80/demo-project](https://github.com/tapioNiemela80/demo-project-spring-data-jdbc)
 
+### DTO-muunnokset ja mappauslogiikka
+- Puhdas domain-malli muunnetaan DTO-muotoon ja takaisin kahden erillisen mappaustason kautta:
+
+    - DomainMapper (esim. ProjectDomainMapper) vastaa domain-olioiden (Project) ja DTO:n (ProjectDTO) välisestä mappauksesta.
+
+    - PersistenceMapper (esim. ProjectPersistenceMapper) huolehtii entiteettien (ProjectEntity) ja DTO:n (ProjectDTO) välisestä mappauksesta.
+
+- Molemmat mappaukset käyttävät DTO:ta (ProjectDTO) yhteisenä muotona domainin ja persistenssin välillä.
+
+- Tämä arkkitehtuuri:
+
+    - Eristää domainin kokonaan persistenssikerroksesta
+
+    - Mahdollistaa sen, ettei domain-olioiden tarvitse paljastaa get-metodeja paketin ulkopuolelle
+
+    - Säilyttää domain-olioiden kapseloinnin: niillä voi olla toDto()-metodi, mutta sitä käytetään ainoastaan DomainMapper-luokan kautta
+
 ## Kehittäjä
 
 - Toteuttanut Tapio Niemelä. Portfolio toimii todisteena osaamisesta:
 - Java + Spring Boot + Spring reaktiivinen kehys
 - Domain Driven Design (aggregaatit, säännöt, eventit)
-- Hexagonal architecture
-- Testivetoisuus
+- Clean architecture (ports & adapters)
 - Käytännöllinen REST-rajapinta
