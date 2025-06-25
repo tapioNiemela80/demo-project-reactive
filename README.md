@@ -74,43 +74,43 @@ Tapahtumien julkaisu ja niiden käsittely on erotettu toisistaan. Julkaisija ei 
 ## REST-endpointit (esimerkit)
 
 ### Luo projekti
-```curl --location 'http://localhost:8080/projects' --header 'Content-Type: application/json' --data-raw '{"name":"coding project", "description":"portfolio demonstration", "estimatedEndDate": "2026-01-01", "estimation":{"hours":10,"minutes":55}, "contactPersonInput":{"name":"tapio niemelä","email":"tapio.niemela_1@yahoo.com"}}'```
+```curl --location 'http://localhost:8081/projects' --header 'Content-Type: application/json' --data-raw '{"name":"coding project", "description":"portfolio demonstration", "estimatedEndDate": "2026-01-01", "estimation":{"hours":10,"minutes":55}, "contactPersonInput":{"name":"tapio niemelä","email":"tapio.niemela_1@yahoo.com"}}'```
 
 ### Lisää taski projektille
-```curl --location 'http://localhost:8080/projects/cd8a4243-717b-4181-bb5a-83381f511920/tasks' --header 'Content-Type: application/json' --data '{"name":"java code", "description":"make java code demonstrating ddd and spring data jdbc", "estimation":{"hours":8, "minutes":0}}'```
+```curl --location 'http://localhost:8081/projects/cd8a4243-717b-4181-bb5a-83381f511920/tasks' --header 'Content-Type: application/json' --data '{"name":"java code", "description":"make java code demonstrating ddd and spring data jdbc", "estimation":{"hours":8, "minutes":0}}'```
 
 ### Lisää tiimi
-```curl --location 'http://localhost:8080/teams' --header 'Content-Type: application/json' --data '{"name":"ddd and spring data jdbc demonstration team"}'```
+```curl --location 'http://localhost:8081/teams' --header 'Content-Type: application/json' --data '{"name":"ddd and spring data jdbc demonstration team"}'```
 
 ### Lisää tiimille jäsen
-```curl --location 'http://localhost:8080/teams/791031a6-922b-4ea0-93da-ae7b21a7a09b/members' --header 'Content-Type: application/json' --data '{"name":"tapio niemelä", "profession":"ddd enthuistic"}'```
+```curl --location 'http://localhost:8081/teams/791031a6-922b-4ea0-93da-ae7b21a7a09b/members' --header 'Content-Type: application/json' --data '{"name":"tapio niemelä", "profession":"ddd enthuistic"}'```
 
 ### Poista jäsen tiimistä
-```curl --location --request DELETE 'http://localhost:8080/teams/791031a6-922b-4ea0-93da-ae7b21a7a09b/members/c41c9a87-688f-428d-a1d5-4134f1faeeaf'```
+```curl --location --request DELETE 'http://localhost:8081/teams/791031a6-922b-4ea0-93da-ae7b21a7a09b/members/c41c9a87-688f-428d-a1d5-4134f1faeeaf'```
 
 ### Lisää (projektin) taski tiimille
-```curl --location --request POST 'http://localhost:8080/teams/791031a6-922b-4ea0-93da-ae7b21a7a09b/tasks/by-project-id/6e46e573-1bf4-46e9-a633-fb7447e42c16' --data ''```
+```curl --location --request POST 'http://localhost:8081/teams/791031a6-922b-4ea0-93da-ae7b21a7a09b/tasks/by-project-id/6e46e573-1bf4-46e9-a633-fb7447e42c16' --data ''```
 
 ### Assignoi taski tiimin jäsenelle
-```curl --location --request PATCH 'http://localhost:8080/teams/791031a6-922b-4ea0-93da-ae7b21a7a09b/tasks/5ad12dec-34be-40a9-ab9a-0c619b6ae6ab/assignee' --header 'Content-Type: application/json' --data '{"assigneeId":"c41c9a87-688f-428d-a1d5-4134f1faeeaf"}'```
+```curl --location --request PATCH 'http://localhost:8081/teams/791031a6-922b-4ea0-93da-ae7b21a7a09b/tasks/5ad12dec-34be-40a9-ab9a-0c619b6ae6ab/assignee' --header 'Content-Type: application/json' --data '{"assigneeId":"c41c9a87-688f-428d-a1d5-4134f1faeeaf"}'```
 
 ### Ota taski käsittelyyn
-```curl --location --request POST 'http://localhost:8080/teams/791031a6-922b-4ea0-93da-ae7b21a7a09b/tasks/5ad12dec-34be-40a9-ab9a-0c619b6ae6ab/mark-in-progress' --data ''```
+```curl --location --request POST 'http://localhost:8081/teams/791031a6-922b-4ea0-93da-ae7b21a7a09b/tasks/5ad12dec-34be-40a9-ab9a-0c619b6ae6ab/mark-in-progress' --data ''```
 
 ### Merkitse taski valmiiksi
-```curl --location 'http://localhost:8080/teams/791031a6-922b-4ea0-93da-ae7b21a7a09b/tasks/f078044f-72dc-4f70-9230-affece4758db/complete' --header 'Content-Type: application/json' --data '{"hours":2, "minutes":0}'```
+```curl --location 'http://localhost:8081/teams/791031a6-922b-4ea0-93da-ae7b21a7a09b/tasks/f078044f-72dc-4f70-9230-affece4758db/complete' --header 'Content-Type: application/json' --data '{"hours":2, "minutes":0}'```
 
 ### Unassignoi task
-```curl --location 'http://localhost:8080/teams/791031a6-922b-4ea0-93da-ae7b21a7a09b/tasks/a41eb504-ae94-40d7-a38f-e0cd2217e5f9/unassign' --header 'Content-Type: application/json' --data ''```
+```curl --location 'http://localhost:8081/teams/791031a6-922b-4ea0-93da-ae7b21a7a09b/tasks/a41eb504-ae94-40d7-a38f-e0cd2217e5f9/unassign' --header 'Content-Type: application/json' --data ''```
 
 ### Poista annettu task tiimiltä
-```curl --location --request DELETE 'http://localhost:8080/teams/791031a6-922b-4ea0-93da-ae7b21a7a09b/tasks/a41eb504-ae94-40d7-a38f-e0cd2217e5f9'```
+```curl --location --request DELETE 'http://localhost:8081/teams/791031a6-922b-4ea0-93da-ae7b21a7a09b/tasks/a41eb504-ae94-40d7-a38f-e0cd2217e5f9'```
 
 ### Hae annettu projekti
-```curl --location 'http://localhost:8080/projects/cd8a4243-717b-4181-bb5a-83381f511920' --data ''```
+```curl --location 'http://localhost:8081/projects/cd8a4243-717b-4181-bb5a-83381f511920' --data ''```
 
 ### Hae annettu tiimi
-```curl --location 'http://localhost:8080/teams/791031a6-922b-4ea0-93da-ae7b21a7a09b' --data ''```
+```curl --location 'http://localhost:8081/teams/791031a6-922b-4ea0-93da-ae7b21a7a09b' --data ''```
 
 ## Rajoitteet ja huomiot
 
