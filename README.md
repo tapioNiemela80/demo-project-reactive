@@ -1,6 +1,6 @@
 # Portfolio: Kevyt reaktiivinen projektinhallintamalli
 
-Tämä on esimerkki kevytprojektinhallintamallista, jossa tiimit ja projektit toimivat domain-aggregaatteina. Projektin tavoitteena on havainnollistaa domain-keskeistä arkkitehtuuria, jossa liiketoimintasäännöt asuvat aggregaateissa, ei serviceissä. Käytössä on lisäksi reaktiivinen malli, jossa puhdas domain-malli on eriytetty tietokantakerroksesta ns. mappereilla
+Tämä on esimerkki kevyestä projektinhallintamallista, jossa tiimit ja projektit toimivat domain-aggregaatteina. Esimerkin tavoitteena on havainnollistaa domain-keskeistä arkkitehtuuria, jossa liiketoimintasäännöt asuvat aggregaateissa, ei serviceissä. Käytössä on lisäksi reaktiivinen malli, jossa puhdas domain-malli on eriytetty tietokantakerroksesta ns. mappereilla
 
 
 ## Tavoite
@@ -114,7 +114,8 @@ Tapahtumien julkaisu ja niiden käsittely on erotettu toisistaan. Julkaisija ei 
 
 ## Rajoitteet ja huomiot
 
-- Tämä projekti demonstroi lähinnä DDD ja reaktiivisen ohjelmointimallin osaamista. Siinä ei ole toteutettu mm. oikeaa autentikoitumista tai minkäänlaista käyttöliittymää.
+- Tämä projekti demonstroi lähinnä DDD ja reaktiivisen ohjelmointimallin osaamista. Siinä ei ole toteutettu mm. oikeaa autentikoitumista tai minkäänlaista käyttöliittymää
+- Toteutuksessa on tarkoituksella valittu hieman keinotekoinen liiketoimintamalli, jonka tehtävä on antaa sopivan rikas konteksti DDD-rakenteiden esittelemiseen
 - Tavoitteena on ollut pitää aggregate-malli keskittyneenä toimintoihin (write). Tietojen hakeminen(read) on toteutettu erikseen suorilla SQL-kyselyillä. Read-malli on tehty kevyesti, koska se ei ole oleellinen osa demoa
 - Yksittäisen projektin hakeminen palauttaa näkymän jossa sen sisältämien taskien aikamääreitä on laskettu yhteen. Toinen tapa toteuttaa vastaava olisi ollut kirjoittaa ne tietokantaan päivitysten yhteydessä; tässä valittiin kuitenkin yksinkertaisempi tapa
 - Yksikkötestit on tehty vain kriittisille toiminnallisuuksille
