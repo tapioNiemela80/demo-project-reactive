@@ -1,12 +1,12 @@
 spring:
   r2dbc:
-    url: r2dbc:postgresql://localhost:5432/mydb?currentSchema=project_demo_reactive
+    url: r2dbc:postgresql://localhost:5433/mydb?currentSchema=project_demo_reactive
     username: user
     password: ${POSTGRES_PASSWORD}
 
   flyway:
     enabled: true
-    url: jdbc:postgresql://localhost:5432/mydb?currentSchema=project_demo_reactive
+    url: jdbc:postgresql://localhost:5433/mydb?currentSchema=project_demo_reactive
     user: user
     password: ${POSTGRES_PASSWORD}
     locations: classpath:db/migration
