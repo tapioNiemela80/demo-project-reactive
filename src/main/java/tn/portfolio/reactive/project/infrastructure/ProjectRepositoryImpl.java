@@ -32,10 +32,10 @@ class ProjectRepositoryImpl implements ProjectRepository {
         Flux<ProjectTaskEntity> taskFlux = taskEntityRepository.findByProjectId(id);
 
         return Mono.zip(projectMono, taskFlux.collectList())
-                .map(this::asTeam);
+                .map(this::astProject);
     }
 
-    private Project asTeam(Tuple2<ProjectEntity, List<ProjectTaskEntity>> tuple) {
+    private Project astProject(Tuple2<ProjectEntity, List<ProjectTaskEntity>> tuple) {
         ProjectEntity entity = tuple.getT1();
         List<ProjectTaskEntity> taskEntities = tuple.getT2();
 
