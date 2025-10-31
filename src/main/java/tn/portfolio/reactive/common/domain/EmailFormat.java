@@ -12,7 +12,7 @@ final class EmailFormat {
     );
 
     private EmailFormat() {
-        throw new IllegalArgumentException("Utility class");
+        throw new UnsupportedOperationException("Utility class");
     }
 
     static boolean isValid(String value) {
