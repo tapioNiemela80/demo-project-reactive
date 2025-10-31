@@ -2,6 +2,7 @@ package tn.portfolio.reactive.project.domain;
 
 import tn.portfolio.reactive.common.domain.ActualSpentTime;
 import tn.portfolio.reactive.common.domain.AggregateRoot;
+import tn.portfolio.reactive.common.domain.Email;
 import tn.portfolio.reactive.project.infrastructure.ProjectDto;
 
 import java.time.LocalDate;
@@ -20,8 +21,7 @@ public final class Project {
     private final int version;
     private final TimeEstimation timeEstimation;
     private final List<ProjectTask> tasks;
-    private final String contactPersonName;
-    private final String contactPersonEmail;
+    private final ContactPerson contactPerson;
 
     public Project(ProjectId id,
                    String name,
@@ -32,8 +32,7 @@ public final class Project {
                    int version,
                    TimeEstimation timeEstimation,
                    List<ProjectTask> tasks,
-                   String contactPersonName,
-                   String contactPersonEmail) {
+                   ContactPerson contactPerson) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -43,13 +42,12 @@ public final class Project {
         this.version = version;
         this.timeEstimation = timeEstimation;
         this.tasks = List.copyOf(tasks);
-        this.contactPersonName = contactPersonName;
-        this.contactPersonEmail = contactPersonEmail;
+        this.contactPerson = contactPerson;
     }
 
     public static Project createNew(ProjectId id, String name, String description, LocalDateTime createdAt,
                                     LocalDate plannedEndDate,
-                                    TimeEstimation timeEstimation, String contactPersonName, String contactPersonEmail) {
+                                    TimeEstimation timeEstimation, ContactPerson contactPerson) {
         return new Project(
                 id,
                 name,
@@ -60,8 +58,7 @@ public final class Project {
                 0,
                 timeEstimation,
                 List.of(),
-                contactPersonName,
-                contactPersonEmail
+                contactPerson
         );
     }
 
@@ -78,7 +75,7 @@ public final class Project {
         existingTasks.add(ProjectTask.create(taskId, taskName, taskDescription, estimation, id));
         return new Project(
                 id, name, description, createdAt, plannedEndDate, status,
-                version, timeEstimation, existingTasks, contactPersonName, contactPersonEmail
+                version, timeEstimation, existingTasks, contactPerson
         );
     }
 
@@ -93,7 +90,7 @@ public final class Project {
                 : status;
         return new Project(
                 id, name, description, createdAt, plannedEndDate, newStatus,
-                version, timeEstimation, processedTasks, contactPersonName, contactPersonEmail
+                version, timeEstimation, processedTasks, contactPerson
         );
     }
 
@@ -168,15 +165,21 @@ public final class Project {
                 version,
                 timeEstimation.getHours(),
                 timeEstimation.getMinutes(),
-                contactPersonName,
-                contactPersonEmail,
+                contactPerson.name(),
+                contactPerson.email().value(),
                 tasks.stream()
                         .map(ProjectTask::toDto)
                         .toList()
         );
     }
 
-    public String getContactPersonEmail() {
-        return contactPersonEmail;
+    public Optional<Email> validContactEmail() {
+        return contactPerson.hasValidEmail()
+                ? Optional.of(contactPerson.email())
+                : Optional.empty();
+    }
+
+    public String contactEmailValue() {
+        return contactPerson.email().value();
     }
 }

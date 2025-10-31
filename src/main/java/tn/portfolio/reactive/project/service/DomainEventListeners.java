@@ -9,42 +9,62 @@ import reactor.core.publisher.Mono;
 import reactor.util.retry.Retry;
 import tn.portfolio.reactive.common.EmailMessage;
 import tn.portfolio.reactive.common.ReactiveEventListener;
+import tn.portfolio.reactive.common.domain.Email;
 import tn.portfolio.reactive.common.service.EmailClientService;
-import tn.portfolio.reactive.project.domain.Project;
-import tn.portfolio.reactive.project.domain.ProjectTaskId;
-import tn.portfolio.reactive.project.domain.UnknownProjectTaskIdException;
+import tn.portfolio.reactive.project.domain.*;
 import tn.portfolio.reactive.project.events.TaskAddedToProjectEvent;
 import tn.portfolio.reactive.project.repository.ProjectRepository;
 import tn.portfolio.reactive.team.events.TeamTaskCompletedEvent;
 
 import java.time.Duration;
-import java.util.Optional;
 
 @Component
 public class DomainEventListeners {
     private final ProjectRepository projects;
     private final EmailClientService emailClientService;
-    private final String sender;
+    private final Email sender;
     private static final Logger log = LoggerFactory.getLogger(DomainEventListeners.class);
 
     public DomainEventListeners(ProjectRepository projects, EmailClientService emailClientService, @Value("${email.sender}") String sender) {
         this.projects = projects;
         this.emailClientService = emailClientService;
-        this.sender = sender;
+        this.sender = Email.of(sender);
     }
 
     @ReactiveEventListener(TaskAddedToProjectEvent.class)
     public Mono<Void> onTaskAdded(TaskAddedToProjectEvent event) {
-        return projects.findById(event.projectId())
-                .flatMap(project -> Mono.justOrEmpty(getEmail(project, event.taskId())))
-                .switchIfEmpty(Mono.error(new UnknownProjectTaskIdException(event.taskId())))
+        return findProject(event.projectId())
+                .flatMap(project -> buildEmailMessage(project, event.taskId()))
                 .flatMap(emailClientService::send)
-                .doOnError(err -> log.error("Got error on listening TaskAddedToProjectEvent %s".formatted(event), err));
+                .doOnError(err -> log.error("Error handling TaskAddedToProjectEvent {}", event, err));
     }
 
-    private Optional<EmailMessage> getEmail(Project project, ProjectTaskId taskId) {
-        return project.getTask(taskId)
-                .map(task -> new EmailMessage(sender, project.getContactPersonEmail(), "Task added", "Task %s was added".formatted(task), false));
+    private Mono<EmailMessage> buildEmailMessage(Project project, ProjectTaskId taskId) {
+        return Mono.justOrEmpty(project.getTask(taskId))
+                .switchIfEmpty(Mono.error(new UnknownProjectTaskIdException(taskId)))
+                .flatMap(task -> project.validContactEmail()
+                        .map(email -> Mono.just(toEmailMessage(task, email)))
+                        .orElseGet(() -> warnInvalidRecipientAddress(project, taskId)));
+    }
+
+    private Mono<EmailMessage> warnInvalidRecipientAddress(Project project, ProjectTaskId taskId) {
+        log.warn("Skipping sending email notification about new task {} for project {}: invalid contact email '{}'",
+                taskId, project.getId(), project.contactEmailValue());
+        return Mono.empty();
+    }
+
+    private EmailMessage toEmailMessage(ProjectTaskSnapshot task, Email contactEmail) {
+        return new EmailMessage(
+                sender,
+                contactEmail,
+                "Task added",
+                "Task %s was added".formatted(task),
+                false
+        );
+    }
+    private Mono<Project> findProject(ProjectId id) {
+        return projects.findById(id)
+                .switchIfEmpty(Mono.error(new UnknownProjectIdException(id)));
     }
 
     @ReactiveEventListener(TeamTaskCompletedEvent.class)
