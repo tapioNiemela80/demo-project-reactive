@@ -2,6 +2,10 @@
 
 Tämä on esimerkki kevyestä projektinhallintamallista, jossa tiimit ja projektit toimivat domain-aggregaatteina. Esimerkin tavoitteena on havainnollistaa domain-keskeistä arkkitehtuuria, jossa liiketoimintasäännöt asuvat aggregaateissa, ei serviceissä. Käytössä on lisäksi reaktiivinen malli, jossa puhdas domain-malli on eriytetty tietokantakerroksesta ns. mappereilla
 
+Arkkitehtuuri on rakennettu siten, että domain-malli on teknisesti riippumaton.
+Sovellus käyttää erillisiä mappauskerroksia (domain <-> DTO <-> persistence entity),
+mikä mahdollistaa domainin uudelleenkäytön myös toisenlaisen persistenssi- tai
+integraatiotekniikan kanssa.
 
 ## Tavoite
 
@@ -157,5 +161,5 @@ Tapahtumien julkaisu ja niiden käsittely on erotettu toisistaan. Julkaisija ei 
 - Toteuttanut Tapio Niemelä. Portfolio toimii todisteena osaamisesta:
 - Java + Spring Boot + Spring reaktiivinen kehys
 - Domain Driven Design (aggregaatit, säännöt, eventit)
-- Clean architecture (ports & adapters)
+- Selkeä kerrosarkkitehtuuri, jossa domain on riippumaton persistenssistä ja HTTP-rajapinnasta
 - Käytännöllinen REST-rajapinta
