@@ -2,7 +2,7 @@ package tn.portfolio.reactive.consent.domain;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Table;
-import tn.portfolio.reactive.common.domain.Email;
+import tn.portfolio.reactive.common.domain.EmailAddress;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -14,13 +14,13 @@ public class EmailOptOut {
 
     private final LocalDateTime optedOutAt;
 
-    public EmailOptOut(Email email, LocalDateTime optedOutAt) {
-        this.email = email.value();
+    public EmailOptOut(EmailAddress emailAddress, LocalDateTime optedOutAt) {
+        this.email = emailAddress.value();
         this.optedOutAt = optedOutAt;
     }
 
-    public static EmailOptOut optOut(Email email, LocalDateTime when) {
-        return new EmailOptOut(email, when);
+    public static EmailOptOut optOut(EmailAddress emailAddress, LocalDateTime when) {
+        return new EmailOptOut(emailAddress, when);
     }
 
     @Override

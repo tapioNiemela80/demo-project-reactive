@@ -3,24 +3,24 @@ package tn.portfolio.reactive.common.domain;
 import java.util.Objects;
 
 @ValueObject
-public final class Email {
+public final class EmailAddress {
     private final String value;
     private final boolean valid;
 
-    private Email(String value, boolean valid) {
+    private EmailAddress(String value, boolean valid) {
         this.value = value;
         this.valid = valid;
     }
 
-    public static Email of(String value) {
+    public static EmailAddress of(String value) {
         if (!EmailFormat.isValid(value)) {
             throw new EmailNotValidException("Email '%s' format is not valid".formatted(value));
         }
-        return new Email(value.toLowerCase(), true);
+        return new EmailAddress(value.toLowerCase(), true);
     }
 
-    public static Email rehydrate(String value) {
-        return new Email(value.toLowerCase(), EmailFormat.isValid(value));
+    public static EmailAddress rehydrate(String value) {
+        return new EmailAddress(value.toLowerCase(), EmailFormat.isValid(value));
     }
 
     public boolean isValid() {
@@ -35,8 +35,8 @@ public final class Email {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Email email = (Email) o;
-        return valid == email.valid && value.equals(email.value);
+        EmailAddress emailAddress = (EmailAddress) o;
+        return valid == emailAddress.valid && value.equals(emailAddress.value);
     }
 
     @Override

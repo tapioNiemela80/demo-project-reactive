@@ -1,8 +1,8 @@
 package tn.portfolio.reactive.common;
 
-import tn.portfolio.reactive.common.domain.Email;
+import tn.portfolio.reactive.common.domain.EmailAddress;
 
-public record EmailMessage(Email from, Email to, String subject, String content, boolean isHtml) {
+public record EmailMessage(EmailAddress from, EmailAddress to, String subject, String content, boolean isHtml) {
 
     @Override
     public String toString() {

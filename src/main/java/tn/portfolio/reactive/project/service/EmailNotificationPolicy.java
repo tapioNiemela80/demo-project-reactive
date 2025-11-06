@@ -1,8 +1,8 @@
 package tn.portfolio.reactive.project.service;
 
 import reactor.core.publisher.Mono;
-import tn.portfolio.reactive.common.domain.Email;
+import tn.portfolio.reactive.common.domain.EmailAddress;
 
 public interface EmailNotificationPolicy {
-    Mono<Boolean> notificationToEmailIsAllowed(Email email);
+    Mono<Boolean> notificationToEmailIsAllowed(EmailAddress emailAddress);
 }

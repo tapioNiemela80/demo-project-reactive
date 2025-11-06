@@ -9,7 +9,7 @@ import reactor.core.publisher.Mono;
 import reactor.util.retry.Retry;
 import tn.portfolio.reactive.common.EmailMessage;
 import tn.portfolio.reactive.common.ReactiveEventListener;
-import tn.portfolio.reactive.common.domain.Email;
+import tn.portfolio.reactive.common.domain.EmailAddress;
 import tn.portfolio.reactive.common.service.EmailClientService;
 import tn.portfolio.reactive.project.domain.*;
 import tn.portfolio.reactive.project.events.TaskAddedToProjectEvent;
@@ -23,7 +23,7 @@ public class DomainEventListeners {
     private final ProjectRepository projects;
     private final EmailClientService emailClientService;
     private final EmailNotificationPolicy emailNotificationPolicy;
-    private final Email sender;
+    private final EmailAddress sender;
     private static final Logger log = LoggerFactory.getLogger(DomainEventListeners.class);
 
     public DomainEventListeners(ProjectRepository projects, EmailClientService emailClientService, EmailNotificationPolicy emailNotificationPolicy,
@@ -31,7 +31,7 @@ public class DomainEventListeners {
         this.projects = projects;
         this.emailClientService = emailClientService;
         this.emailNotificationPolicy = emailNotificationPolicy;
-        this.sender = Email.of(sender);
+        this.sender = EmailAddress.of(sender);
     }
 
     @ReactiveEventListener(TaskAddedToProjectEvent.class)
@@ -56,34 +56,34 @@ public class DomainEventListeners {
                 .switchIfEmpty(Mono.error(new UnknownProjectTaskIdException(taskId)));
     }
 
-    private Mono<Email> resolveContactEmail(Project project, ProjectTaskId taskId) {
+    private Mono<EmailAddress> resolveContactEmail(Project project, ProjectTaskId taskId) {
         return Mono.defer(() -> Mono.justOrEmpty(project.validContactEmail()))
                 .switchIfEmpty(warnInvalidRecipientAddress(project, taskId));
     }
 
-    private Mono<Email> warnInvalidRecipientAddress(Project project, ProjectTaskId taskId) {
+    private Mono<EmailAddress> warnInvalidRecipientAddress(Project project, ProjectTaskId taskId) {
         return Mono.fromRunnable(() ->
                 log.warn("Skipping sending email notification about new task {} for project {}: invalid contact email",
                         taskId, project.getId())
         ).then(Mono.empty());
     }
 
-    private Mono<Email> requirePolicyAllows(Email email, Project project, ProjectTaskId taskId) {
-        return emailNotificationPolicy.notificationToEmailIsAllowed(email)
-                .flatMap(allowed -> enforcePolicy(email, project, taskId, allowed));
+    private Mono<EmailAddress> requirePolicyAllows(EmailAddress emailAddress, Project project, ProjectTaskId taskId) {
+        return emailNotificationPolicy.notificationToEmailIsAllowed(emailAddress)
+                .flatMap(allowed -> enforcePolicy(emailAddress, project, taskId, allowed));
     }
 
-    private Mono<Email> enforcePolicy(Email email, Project project, ProjectTaskId taskId, Boolean allowed) {
+    private Mono<EmailAddress> enforcePolicy(EmailAddress emailAddress, Project project, ProjectTaskId taskId, Boolean allowed) {
         if (!allowed) {
             log.info("Skipping email notification about new task {} for project {}: policy denied",
                     taskId.value(), project.getId());
             return Mono.empty();
         }
-        return Mono.just(email);
+        return Mono.just(emailAddress);
     }
 
-    private EmailMessage toEmailMessage(ProjectTaskSnapshot task, Email contactEmail) {
-        return new EmailMessage(sender, contactEmail, "Task added", "Task %s was added".formatted(task), false);
+    private EmailMessage toEmailMessage(ProjectTaskSnapshot task, EmailAddress contactEmailAddress) {
+        return new EmailMessage(sender, contactEmailAddress, "Task added", "Task %s was added".formatted(task), false);
     }
 
     private Mono<Project> findProject(ProjectId id) {

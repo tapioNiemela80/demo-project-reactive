@@ -10,7 +10,7 @@ import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 import tn.portfolio.reactive.common.EmailMessage;
 import tn.portfolio.reactive.common.domain.ActualSpentTime;
-import tn.portfolio.reactive.common.domain.Email;
+import tn.portfolio.reactive.common.domain.EmailAddress;
 import tn.portfolio.reactive.common.service.EmailClientService;
 import tn.portfolio.reactive.project.domain.*;
 import tn.portfolio.reactive.project.events.TaskAddedToProjectEvent;
@@ -48,13 +48,13 @@ class DomainEventListenersTest {
         TaskAddedToProjectEvent event = new TaskAddedToProjectEvent(projectId, taskId);
 
         Project mockProject = mock(Project.class);
-        Email email = mock(Email.class);
-        when(mockProject.validContactEmail()).thenReturn(Optional.of(email));
+        EmailAddress emailAddress = mock(EmailAddress.class);
+        when(mockProject.validContactEmail()).thenReturn(Optional.of(emailAddress));
         when(projectRepository.findById(projectId)).thenReturn(Mono.just(mockProject));
-        when(emailNotificationPolicy.notificationToEmailIsAllowed(email)).thenReturn(Mono.just(true));
+        when(emailNotificationPolicy.notificationToEmailIsAllowed(emailAddress)).thenReturn(Mono.just(true));
         ProjectTaskSnapshot taskSnapshot = new ProjectTaskSnapshot(taskId, projectId, "Task added", "desc", TimeEstimation.fromMinutes(10));
         String content = "Task %s was added".formatted(taskSnapshot);
-        EmailMessage expectedEmail = new EmailMessage(Email.of(sender), email, "Task added", content, false);
+        EmailMessage expectedEmail = new EmailMessage(EmailAddress.of(sender), emailAddress, "Task added", content, false);
         when(mockProject.getTask(taskId)).thenReturn(Optional.of(taskSnapshot));
         when(emailClientService.send(any(EmailMessage.class))).thenReturn(Mono.empty());
 
@@ -89,10 +89,10 @@ class DomainEventListenersTest {
         TaskAddedToProjectEvent event = new TaskAddedToProjectEvent(projectId, taskId);
 
         Project mockProject = mock(Project.class);
-        Email email = mock(Email.class);
-        when(mockProject.validContactEmail()).thenReturn(Optional.of(email));
+        EmailAddress emailAddress = mock(EmailAddress.class);
+        when(mockProject.validContactEmail()).thenReturn(Optional.of(emailAddress));
         when(projectRepository.findById(projectId)).thenReturn(Mono.just(mockProject));
-        when(emailNotificationPolicy.notificationToEmailIsAllowed(email)).thenReturn(Mono.just(false));
+        when(emailNotificationPolicy.notificationToEmailIsAllowed(emailAddress)).thenReturn(Mono.just(false));
         ProjectTaskSnapshot taskSnapshot = new ProjectTaskSnapshot(taskId, projectId, "Task added", "desc", TimeEstimation.fromMinutes(10));
         when(mockProject.getTask(taskId)).thenReturn(Optional.of(taskSnapshot));
 

@@ -2,7 +2,7 @@ package tn.portfolio.reactive.project.domain;
 
 import tn.portfolio.reactive.common.domain.ActualSpentTime;
 import tn.portfolio.reactive.common.domain.AggregateRoot;
-import tn.portfolio.reactive.common.domain.Email;
+import tn.portfolio.reactive.common.domain.EmailAddress;
 import tn.portfolio.reactive.project.infrastructure.ProjectDto;
 
 import java.time.LocalDate;
@@ -173,7 +173,7 @@ public final class Project {
         );
     }
 
-    public Optional<Email> validContactEmail() {
+    public Optional<EmailAddress> validContactEmail() {
         return contactPerson.hasValidEmail()
                 ? Optional.of(contactPerson.email())
                 : Optional.empty();
