@@ -60,6 +60,20 @@ Tietyt aggregaattitapahtumat laukaisevat muita päivityksiä järjestelmässä:
 - `TaskAddedToProjectEvent`: syntyy, kun uusi taski lisätään projektille, käsittelijä lähettää tästä sähköpostia projektin yhteyshenkilölle. Tämä demonstroi "side-effect":in käsittelyä
 - `TeamTaskCompletedEvent`: kun tiimi merkitsee tehtävän valmiiksi, tämän eventin käsittelijä päivittää projektin vastaavan taskin valmiiksi toteutuneen työmäärän kanssa. Projekti itse huolehtii itse siitä, että projekti merkitään valmiiksi jos kaikki sen tehtävät ovat valmiita. Tämän eventin käsittely demonstroi DDD:n perusperiaatetta, että kahta aggregate roottia ei saa tallentaa yhdessä transaktiossa. Eventin käsittely on myös idempotentti. Jos sen käsittelyn aikana tapahtuu optimistisen lukituksen virhe, yritetään uudestaan. Jos puolestaan toinen osapuoli on yrittänyt lisätä tehtävää, tarkistetaan onko projekti jo valmis ja hylätään sen aiheuttama päivitys (jos projekti on jo valmis)
 
+## Sähköposti-ilmoitukset ja suostumusmalli (supportive co-domain)
+
+Kun projektille lisätään uusi taski, järjestelmä voi lähettää tästä
+sähköposti-ilmoituksen projektin yhteyshenkilölle. Ilmoituksen lähetys
+ei kuitenkaan ole automaattista, vaan se perustuu kahteen ehtoon:
+
+1. Projektin yhteyshenkilön sähköpostiosoitteen tulee olla teknisesti validi
+2. Vastaanottaja ei saa olla kieltänyt ilmoituksia (opt-out / consent), esim. GDPR-syistä
+
+Opt-out -logiikka elää omassa **tukidomainissa (supportive co-domain)**, eikä siihen tässä portfoliossa ole tehty REST-kerrosta
+
+Projektin domain ei tunne opt-out -toteutuksen yksityiskohtia, vaan käyttää siihen
+ainoastaan `EmailNotificationPolicy`-rajapintaa.
+
 ### Tekniset huomiot
 Eventit välitetään reaktiivisesti komponentin ReactiveDomainEventPublisher kautta. Kyseessä on ns. hot source, mikä tarkoittaa:
 
