@@ -16,11 +16,11 @@ public final class Email {
         if (!EmailFormat.isValid(value)) {
             throw new EmailNotValidException("Email '%s' format is not valid".formatted(value));
         }
-        return new Email(value, true);
+        return new Email(value.toLowerCase(), true);
     }
 
     public static Email rehydrate(String value) {
-        return new Email(value, EmailFormat.isValid(value));
+        return new Email(value.toLowerCase(), EmailFormat.isValid(value));
     }
 
     public boolean isValid() {

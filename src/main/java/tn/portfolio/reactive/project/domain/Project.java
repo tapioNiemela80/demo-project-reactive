@@ -178,8 +178,4 @@ public final class Project {
                 ? Optional.of(contactPerson.email())
                 : Optional.empty();
     }
-
-    public String contactEmailValue() {
-        return contactPerson.email().value();
-    }
 }

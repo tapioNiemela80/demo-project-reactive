@@ -22,12 +22,15 @@ import java.time.Duration;
 public class DomainEventListeners {
     private final ProjectRepository projects;
     private final EmailClientService emailClientService;
+    private final EmailNotificationPolicy emailNotificationPolicy;
     private final Email sender;
     private static final Logger log = LoggerFactory.getLogger(DomainEventListeners.class);
 
-    public DomainEventListeners(ProjectRepository projects, EmailClientService emailClientService, @Value("${email.sender}") String sender) {
+    public DomainEventListeners(ProjectRepository projects, EmailClientService emailClientService, EmailNotificationPolicy emailNotificationPolicy,
+                                @Value("${email.sender}") String sender) {
         this.projects = projects;
         this.emailClientService = emailClientService;
+        this.emailNotificationPolicy = emailNotificationPolicy;
         this.sender = Email.of(sender);
     }
 
@@ -40,28 +43,49 @@ public class DomainEventListeners {
     }
 
     private Mono<EmailMessage> buildEmailMessage(Project project, ProjectTaskId taskId) {
-        return Mono.justOrEmpty(project.getTask(taskId))
-                .switchIfEmpty(Mono.error(new UnknownProjectTaskIdException(taskId)))
-                .flatMap(task -> project.validContactEmail()
-                        .map(email -> Mono.just(toEmailMessage(task, email)))
-                        .orElseGet(() -> warnInvalidRecipientAddress(project, taskId)));
+        return findTask(project, taskId)
+                .flatMap(task ->
+                        resolveContactEmail(project, taskId)
+                                .flatMap(email -> requirePolicyAllows(email, project, taskId))
+                                .map(email -> toEmailMessage(task, email))
+                );
     }
 
-    private Mono<EmailMessage> warnInvalidRecipientAddress(Project project, ProjectTaskId taskId) {
-        log.warn("Skipping sending email notification about new task {} for project {}: invalid contact email '{}'",
-                taskId, project.getId(), project.contactEmailValue());
-        return Mono.empty();
+    private Mono<ProjectTaskSnapshot> findTask(Project project, ProjectTaskId taskId) {
+        return Mono.justOrEmpty(project.getTask(taskId))
+                .switchIfEmpty(Mono.error(new UnknownProjectTaskIdException(taskId)));
+    }
+
+    private Mono<Email> resolveContactEmail(Project project, ProjectTaskId taskId) {
+        return Mono.defer(() -> Mono.justOrEmpty(project.validContactEmail()))
+                .switchIfEmpty(warnInvalidRecipientAddress(project, taskId));
+    }
+
+    private Mono<Email> warnInvalidRecipientAddress(Project project, ProjectTaskId taskId) {
+        return Mono.fromRunnable(() ->
+                log.warn("Skipping sending email notification about new task {} for project {}: invalid contact email",
+                        taskId, project.getId())
+        ).then(Mono.empty());
+    }
+
+    private Mono<Email> requirePolicyAllows(Email email, Project project, ProjectTaskId taskId) {
+        return emailNotificationPolicy.notificationToEmailIsAllowed(email)
+                .flatMap(allowed -> enforcePolicy(email, project, taskId, allowed));
+    }
+
+    private Mono<Email> enforcePolicy(Email email, Project project, ProjectTaskId taskId, Boolean allowed) {
+        if (!allowed) {
+            log.info("Skipping email notification about new task {} for project {}: policy denied",
+                    taskId.value(), project.getId());
+            return Mono.empty();
+        }
+        return Mono.just(email);
     }
 
     private EmailMessage toEmailMessage(ProjectTaskSnapshot task, Email contactEmail) {
-        return new EmailMessage(
-                sender,
-                contactEmail,
-                "Task added",
-                "Task %s was added".formatted(task),
-                false
-        );
+        return new EmailMessage(sender, contactEmail, "Task added", "Task %s was added".formatted(task), false);
     }
+
     private Mono<Project> findProject(ProjectId id) {
         return projects.findById(id)
                 .switchIfEmpty(Mono.error(new UnknownProjectIdException(id)));
