@@ -13,7 +13,7 @@ public class GdprPolicy implements EmailNotificationPolicy {
 
     @Override
     public Mono<Boolean> notificationToEmailIsAllowed(Email email) {
-        return emailOptOuts.isOptedOut(email.value())
-                .map(optedOut -> !optedOut);
+        return emailOptOuts.existsByEmail(email.value())
+                .map(optOut -> !optOut);
     }
 }

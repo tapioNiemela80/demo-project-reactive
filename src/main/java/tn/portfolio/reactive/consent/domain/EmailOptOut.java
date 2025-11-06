@@ -19,11 +19,6 @@ public class EmailOptOut {
         this.optedOutAt = optedOutAt;
     }
 
-    public EmailOptOut(String email, LocalDateTime optedOutAt) {
-        this.email = email;
-        this.optedOutAt = optedOutAt;
-    }
-
     public static EmailOptOut optOut(Email email, LocalDateTime when) {
         return new EmailOptOut(email, when);
     }
