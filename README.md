@@ -55,7 +55,7 @@ Itse sovellus käynnistetään ajamalla komento ```mvn spring-boot:run```
 - **TimeEstimation**: Abstraktoi ajan arvion. Estää virheelliset arvot (esim. negatiiviset tunnit).
 - **ActualSpentTime**: Kuvaa oikeasti kulunutta aikaa. Voi päivittyä vasta kun task on valmis.
 - **ProjectId, ProjectTaskId, TaskId, TeamId, TeamTaskId, TeamMemberId**: Varmistavat oikeat ID-käytännöt ilman paljaita merkkijonoja tai UUID:itä.
-- **Email**: Arvotyyppi sähköpostiosoitteelle. Syöte validoidaan aina, ja osoitteen lähetyskelpoisuus arvioidaan erikseen käytön yhteydessä.
+- **EmailAddress**: Arvotyyppi sähköpostiosoitteelle. Syöte validoidaan aina, ja osoitteen lähetyskelpoisuus arvioidaan erikseen käytön yhteydessä.
 
 ## Eventit
 
