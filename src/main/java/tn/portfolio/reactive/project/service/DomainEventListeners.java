@@ -11,6 +11,7 @@ import tn.portfolio.reactive.common.EmailMessage;
 import tn.portfolio.reactive.common.ReactiveEventListener;
 import tn.portfolio.reactive.common.domain.EmailAddress;
 import tn.portfolio.reactive.common.service.EmailClientService;
+import tn.portfolio.reactive.consent.domain.EmailNotificationPolicy;
 import tn.portfolio.reactive.project.domain.*;
 import tn.portfolio.reactive.project.events.TaskAddedToProjectEvent;
 import tn.portfolio.reactive.project.repository.ProjectRepository;

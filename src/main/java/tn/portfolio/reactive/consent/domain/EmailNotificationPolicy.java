@@ -1,4 +1,4 @@
-package tn.portfolio.reactive.project.service;
+package tn.portfolio.reactive.consent.domain;
 
 import reactor.core.publisher.Mono;
 import tn.portfolio.reactive.common.domain.EmailAddress;
