@@ -3,11 +3,11 @@ package tn.portfolio.reactive.consent.service;
 import reactor.core.publisher.Mono;
 import tn.portfolio.reactive.common.domain.EmailAddress;
 import tn.portfolio.reactive.consent.repository.EmailOptOutRepository;
-import tn.portfolio.reactive.consent.domain.EmailNotificationPolicy;
+import tn.portfolio.reactive.project.domain.EmailNotificationPolicy;
 
-public class GdprPolicy implements EmailNotificationPolicy {
+public class OptOutNotificationPolicy implements EmailNotificationPolicy {
     private final EmailOptOutRepository emailOptOuts;
-    public GdprPolicy(EmailOptOutRepository emailOptOuts) {
+    public OptOutNotificationPolicy(EmailOptOutRepository emailOptOuts) {
         this.emailOptOuts = emailOptOuts;
     }
 
