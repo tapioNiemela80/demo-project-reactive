@@ -1,4 +1,4 @@
-package tn.portfolio.reactive.common.domain;
+package tn.portfolio.reactive.project.service;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -9,11 +9,13 @@ import org.springframework.dao.OptimisticLockingFailureException;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 import tn.portfolio.reactive.common.EmailMessage;
+import tn.portfolio.reactive.common.domain.ActualSpentTime;
+import tn.portfolio.reactive.common.domain.EmailAddress;
 import tn.portfolio.reactive.common.service.EmailClientService;
+import tn.portfolio.reactive.project.domain.EmailNotificationPolicy;
 import tn.portfolio.reactive.project.domain.*;
 import tn.portfolio.reactive.project.events.TaskAddedToProjectEvent;
 import tn.portfolio.reactive.project.repository.ProjectRepository;
-import tn.portfolio.reactive.project.service.DomainEventListeners;
 import tn.portfolio.reactive.team.domain.TeamTaskId;
 import tn.portfolio.reactive.team.events.TeamTaskCompletedEvent;
 
@@ -28,6 +30,8 @@ class DomainEventListenersTest {
     private ProjectRepository projectRepository;
     @Mock
     private EmailClientService emailClientService;
+    @Mock
+    private EmailNotificationPolicy emailNotificationPolicy;
 
     private DomainEventListeners underTest;
 
@@ -35,7 +39,7 @@ class DomainEventListenersTest {
 
     @BeforeEach
     void setUp() {
-        underTest = new DomainEventListeners(projectRepository, emailClientService, sender);
+        underTest = new DomainEventListeners(projectRepository, emailClientService, emailNotificationPolicy, sender);
     }
 
     @Test
@@ -45,18 +49,58 @@ class DomainEventListenersTest {
         TaskAddedToProjectEvent event = new TaskAddedToProjectEvent(projectId, taskId);
 
         Project mockProject = mock(Project.class);
+        EmailAddress emailAddress = mock(EmailAddress.class);
+        when(mockProject.validContactEmail()).thenReturn(Optional.of(emailAddress));
         when(projectRepository.findById(projectId)).thenReturn(Mono.just(mockProject));
+        when(emailNotificationPolicy.notificationToEmailIsAllowed(emailAddress)).thenReturn(Mono.just(true));
         ProjectTaskSnapshot taskSnapshot = new ProjectTaskSnapshot(taskId, projectId, "Task added", "desc", TimeEstimation.fromMinutes(10));
         String content = "Task %s was added".formatted(taskSnapshot);
-        EmailMessage expectedEmail = new EmailMessage(sender, "contact@example.com", "Task added", content, false);
+        EmailMessage expectedEmail = new EmailMessage(EmailAddress.of(sender), emailAddress, "Task added", content, false);
         when(mockProject.getTask(taskId)).thenReturn(Optional.of(taskSnapshot));
-        when(mockProject.getContactPersonEmail()).thenReturn("contact@example.com");
         when(emailClientService.send(any(EmailMessage.class))).thenReturn(Mono.empty());
 
         StepVerifier.create(underTest.onTaskAdded(event))
                 .verifyComplete();
 
         verify(emailClientService).send(expectedEmail);
+    }
+
+    @Test
+    void shouldNotSendEmailWhenTaskIsAddedBecauseEmailIsNotValid() {
+        ProjectId projectId = new ProjectId(UUID.randomUUID());
+        ProjectTaskId taskId = new ProjectTaskId(UUID.randomUUID());
+        TaskAddedToProjectEvent event = new TaskAddedToProjectEvent(projectId, taskId);
+
+        Project mockProject = mock(Project.class);
+        when(mockProject.validContactEmail()).thenReturn(Optional.empty());
+        when(projectRepository.findById(projectId)).thenReturn(Mono.just(mockProject));
+        ProjectTaskSnapshot taskSnapshot = new ProjectTaskSnapshot(taskId, projectId, "Task added", "desc", TimeEstimation.fromMinutes(10));
+        when(mockProject.getTask(taskId)).thenReturn(Optional.of(taskSnapshot));
+
+        StepVerifier.create(underTest.onTaskAdded(event))
+                .verifyComplete();
+
+        verify(emailClientService, never()).send(any(EmailMessage.class));
+    }
+
+    @Test
+    void shouldNotSendEmailWhenTaskIsAddedBecauseEmailIsNotAcceptedByPolicy() {
+        ProjectId projectId = new ProjectId(UUID.randomUUID());
+        ProjectTaskId taskId = new ProjectTaskId(UUID.randomUUID());
+        TaskAddedToProjectEvent event = new TaskAddedToProjectEvent(projectId, taskId);
+
+        Project mockProject = mock(Project.class);
+        EmailAddress emailAddress = mock(EmailAddress.class);
+        when(mockProject.validContactEmail()).thenReturn(Optional.of(emailAddress));
+        when(projectRepository.findById(projectId)).thenReturn(Mono.just(mockProject));
+        when(emailNotificationPolicy.notificationToEmailIsAllowed(emailAddress)).thenReturn(Mono.just(false));
+        ProjectTaskSnapshot taskSnapshot = new ProjectTaskSnapshot(taskId, projectId, "Task added", "desc", TimeEstimation.fromMinutes(10));
+        when(mockProject.getTask(taskId)).thenReturn(Optional.of(taskSnapshot));
+
+        StepVerifier.create(underTest.onTaskAdded(event))
+                .verifyComplete();
+
+        verify(emailClientService, never()).send(any(EmailMessage.class));
     }
 
     @Test
@@ -84,7 +128,7 @@ class DomainEventListenersTest {
         when(projectRepository.findById(projectId)).thenReturn(Mono.empty());
 
         StepVerifier.create(underTest.onTaskAdded(event))
-                .expectError(UnknownProjectTaskIdException.class)
+                .expectError(UnknownProjectIdException.class)
                 .verify();
     }
 

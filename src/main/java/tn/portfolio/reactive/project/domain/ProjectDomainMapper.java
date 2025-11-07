@@ -21,9 +21,12 @@ public final class ProjectDomainMapper {
                 dto.version(),
                 new TimeEstimation(dto.initialEstimatedTimeHours(), dto.initialEstimatedTimeMinutes()),
                 tasks,
-                dto.contactPersonName(),
-                dto.contactPersonEmail()
+                toContactPerson(dto)
         );
+    }
+
+    private static ContactPerson toContactPerson(ProjectDto dto) {
+        return ContactPerson.rehydrate(dto.name(), dto.contactPersonEmail());
     }
 
     private static ProjectTask fromDto(ProjectTaskDto dto) {

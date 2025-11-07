@@ -3,6 +3,7 @@ package tn.portfolio.reactive.project.service;
 import org.springframework.stereotype.Component;
 import tn.portfolio.reactive.common.service.DateService;
 import tn.portfolio.reactive.project.controller.ContactPersonInput;
+import tn.portfolio.reactive.project.domain.ContactPerson;
 import tn.portfolio.reactive.project.domain.Project;
 import tn.portfolio.reactive.project.domain.ProjectId;
 import tn.portfolio.reactive.project.domain.TimeEstimation;
@@ -21,11 +22,15 @@ class ProjectFactory {
                       LocalDate plannedEndDate,
                       tn.portfolio.reactive.project.controller.TimeEstimation timeEstimation,
                       ContactPersonInput contactPersonInput) {
-        return Project.createNew(id, name, description, dateService.now(), plannedEndDate, toDomain(timeEstimation), contactPersonInput.name(), contactPersonInput.email());
+        return Project.createNew(id, name, description, dateService.now(), plannedEndDate, toDomain(timeEstimation), toDomain(contactPersonInput));
     }
 
     private TimeEstimation toDomain(tn.portfolio.reactive.project.controller.TimeEstimation timeEstimation) {
         return new TimeEstimation(timeEstimation.hours(), timeEstimation.minutes());
+    }
+
+    private ContactPerson toDomain(ContactPersonInput contactPersonInput) {
+        return ContactPerson.create(contactPersonInput.name(), contactPersonInput.email());
     }
 
 }

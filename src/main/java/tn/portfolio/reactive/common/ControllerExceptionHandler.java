@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import reactor.core.publisher.Mono;
+import tn.portfolio.reactive.common.domain.EmailNotValidException;
 import tn.portfolio.reactive.project.domain.ProjectAlreadyCompletedException;
 import tn.portfolio.reactive.project.domain.ProjectTimeEstimationWouldBeExceededException;
 import tn.portfolio.reactive.project.domain.UnknownProjectIdException;
@@ -93,6 +94,14 @@ public class ControllerExceptionHandler {
 
     @ExceptionHandler(TeamMemberHasAssignedTasksException.class)
     public Mono<ResponseEntity<String>> handleTeamMemberHasAssignedTasksException(TeamMemberHasAssignedTasksException ex) {
+        return Mono.just(ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(ex.getMessage()));
+    }
+
+
+    @ExceptionHandler(EmailNotValidException.class)
+    public Mono<ResponseEntity<String>> handleEmailNotValidException(EmailNotValidException ex) {
         return Mono.just(ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(ex.getMessage()));
