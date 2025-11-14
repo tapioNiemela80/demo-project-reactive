@@ -205,7 +205,7 @@ public class Team {
 
     TeamDto toDto(){
         var dtoMembers = members.stream().map(member -> member.toDto(id)).toList();
-        var dtoTasks = tasks.stream().map(member -> member.toDto(id)).toList();
+        var dtoTasks = tasks.stream().map(task -> task.toDto(id)).toList();
         return new TeamDto(id.value(), name, version, dtoMembers, dtoTasks);
     }
 }
