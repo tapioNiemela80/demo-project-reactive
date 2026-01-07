@@ -61,7 +61,7 @@ public class ProjectController {
     public Mono<ResponseEntity<ProjectView>> findById(@PathVariable UUID projectId){
         return projectViewService.getProjectView(projectId)
                 .map(data -> ResponseEntity.ok(data))
-                .switchIfEmpty(Mono.error(new IllegalArgumentException("Unknown project "+projectId)));
+                .switchIfEmpty(Mono.just(ResponseEntity.notFound().build()));
     }
 
     private URI uri(String value){

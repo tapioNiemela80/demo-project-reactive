@@ -32,7 +32,7 @@ public class ControllerExceptionHandler {
     @ExceptionHandler(UnknownProjectTaskIdException.class)
     public Mono<ResponseEntity<String>> handleUnknownProjectTaskIdException(UnknownProjectTaskIdException ex) {
         return Mono.just(ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
+                .status(HttpStatus.NOT_FOUND)
                 .body(ex.getMessage()));
     }
 
@@ -44,7 +44,7 @@ public class ControllerExceptionHandler {
     }
 
     @ExceptionHandler(ProjectAlreadyCompletedException.class)
-    public Mono<ResponseEntity<String>> ProjectAlreadyCompletedException(ProjectAlreadyCompletedException ex) {
+    public Mono<ResponseEntity<String>> handleProjectAlreadyCompletedException(ProjectAlreadyCompletedException ex) {
         return Mono.just(ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(ex.getMessage()));
@@ -67,21 +67,21 @@ public class ControllerExceptionHandler {
     @ExceptionHandler(UnknownTeamIdException.class)
     public Mono<ResponseEntity<String>> handleUnknownTeamIdException(UnknownTeamIdException ex) {
         return Mono.just(ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
+                .status(HttpStatus.NOT_FOUND)
                 .body(ex.getMessage()));
     }
 
     @ExceptionHandler(UnknownTeamMemberIdException.class)
     public Mono<ResponseEntity<String>> handleUnknownTeamMemberIdException(UnknownTeamMemberIdException ex) {
         return Mono.just(ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
+                .status(HttpStatus.NOT_FOUND)
                 .body(ex.getMessage()));
     }
 
     @ExceptionHandler(UnknownTeamTaskIdException.class)
     public Mono<ResponseEntity<String>> handleUnknownTeamTaskIdException(UnknownTeamTaskIdException ex) {
         return Mono.just(ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
+                .status(HttpStatus.NOT_FOUND)
                 .body(ex.getMessage()));
     }
 
@@ -98,7 +98,6 @@ public class ControllerExceptionHandler {
                 .status(HttpStatus.BAD_REQUEST)
                 .body(ex.getMessage()));
     }
-
 
     @ExceptionHandler(EmailNotValidException.class)
     public Mono<ResponseEntity<String>> handleEmailNotValidException(EmailNotValidException ex) {
