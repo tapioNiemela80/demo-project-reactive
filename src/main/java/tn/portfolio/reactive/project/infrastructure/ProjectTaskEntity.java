@@ -80,7 +80,7 @@ class ProjectTaskEntity implements Persistable<UUID> {
                 estimatedTimeMinutes,
                 taskStatus,
                 actualTimeSpentHours,
-                actualTimeSpentHours,
+                actualTimeSpentMinutes,
                 projectId
         );
     }

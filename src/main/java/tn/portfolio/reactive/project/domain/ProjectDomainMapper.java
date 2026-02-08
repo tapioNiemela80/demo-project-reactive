@@ -26,7 +26,7 @@ public final class ProjectDomainMapper {
     }
 
     private static ContactPerson toContactPerson(ProjectDto dto) {
-        return ContactPerson.rehydrate(dto.name(), dto.contactPersonEmail());
+        return ContactPerson.rehydrate(dto.contactPersonName(), dto.contactPersonEmail());
     }
 
     private static ProjectTask fromDto(ProjectTaskDto dto) {

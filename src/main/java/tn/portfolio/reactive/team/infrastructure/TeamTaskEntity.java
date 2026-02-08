@@ -67,6 +67,6 @@ class TeamTaskEntity implements Persistable<UUID> {
     }
 
     TeamTaskDto toDto(){
-        return new TeamTaskDto(id, name, description, projectTaskId, status, assigneeId, actualTimeSpentHours, actualTimeSpentHours, teamId);
+        return new TeamTaskDto(id, name, description, projectTaskId, status, assigneeId, actualTimeSpentHours, actualTimeSpentMinutes, teamId);
     }
 }
